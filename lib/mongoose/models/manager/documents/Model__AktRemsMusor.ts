@@ -77,9 +77,10 @@ const akt_rems_musor__Schema = new Schema<I_AktRemsMusor>(
 
 akt_rems_musor__Schema.virtual('totalAktRemsMusorSum').get(function () {
   let totalAktRemsMusorSum = 0;
-  this.serviceWorks.forEach((item) => {
+  for (const item of this.serviceWorks) {
     totalAktRemsMusorSum += item.rowSum;
-  });
+  }
+
   return totalAktRemsMusorSum.toFixed(2);
 });
 

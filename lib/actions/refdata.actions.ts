@@ -150,10 +150,10 @@ export const delete__one = async (_id: string, currentURL: string) => {
       },
     });
     const myData = await res.json();
-    if (!res.ok) {
-      throw new Error(myData.message);
-    } else {
+    if (res.ok) {
       toast.success(myData.message);
+    } else {
+      throw new Error(myData.message);
     }
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {

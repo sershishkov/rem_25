@@ -77,9 +77,10 @@ const dokument_nakladnaya__Schema = new Schema<I_DocumentNakladnaya>(
 
 dokument_nakladnaya__Schema.virtual('totalNaklSum').get(function () {
   let totalNaklSumSell = 0;
-  this.products.forEach((item) => {
+  for (const item of this.products) {
     totalNaklSumSell += item.amount * item.price;
-  });
+  }
+
   return totalNaklSumSell.toFixed(2);
 });
 

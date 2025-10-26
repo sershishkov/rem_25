@@ -92,14 +92,14 @@ const dokument_akt__Schema = new Schema<I_DocumentAktOfWork>(
 
 dokument_akt__Schema.virtual('totalSums').get(function () {
   let totalSumT = 0;
-  this.thirdPartyServices.forEach((item) => {
-    totalSumT += item.amount! * item.price!;
-  });
-
   let totalSumS = 0;
-  this.serviceWorks.forEach((item) => {
+  for (const item of this.thirdPartyServices) {
+    totalSumT += item.amount! * item.price!;
+  }
+  for (const item of this.serviceWorks) {
     totalSumS += item.amount! * item.price!;
-  });
+  }
+
   return {
     totalThirdPartySum: totalSumT.toFixed(2),
     totalServiceWorkSum: totalSumS.toFixed(2),

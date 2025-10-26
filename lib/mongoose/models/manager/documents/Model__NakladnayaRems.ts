@@ -100,9 +100,10 @@ const nakladnaya_rems__Schema = new Schema<I_NakladnayaRems>(
 
 nakladnaya_rems__Schema.virtual('totalRemsNaklSum').get(function () {
   let totalNaklSumSell = 0;
-  this.products.forEach((item) => {
+  for (const item of this.products) {
     totalNaklSumSell += item.rowSum;
-  });
+  }
+
   return totalNaklSumSell.toFixed(2);
 });
 

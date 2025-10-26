@@ -34,7 +34,7 @@ export default function Navbar() {
   if (!isClient) {
     return null; // Prevent rendering on the server
   }
-  if (typeof window === 'undefined') {
+  if (globalThis.window === undefined) {
     return null; // Prevent rendering on the server
   }
 
