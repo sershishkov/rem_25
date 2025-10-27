@@ -19,6 +19,7 @@
     "next-auth": "^4.24.11",
     "react": "19.1.1",
     "react-dom": "19.1.1",
+    "react-phone-number-input": "^3.4.13",
     "react-toastify": "^11.0.5",
     "sass": "^1.93.2",
     "uuid": "^13.0.0"

@@ -5,9 +5,10 @@ import { I_Client, I_ClientType } from '@/interfaces/refdata';
 const genNumberByDate = (enteredDate: Date) => {
   const fullYear = enteredDate.getFullYear();
   const month =
-    enteredDate.getMonth() < 10
+    enteredDate.getMonth() < 9
       ? `0${enteredDate.getMonth() + 1}`
       : enteredDate.getMonth() + 1;
+
   const day =
     enteredDate.getDate() < 10
       ? `0${enteredDate.getDate()}`
