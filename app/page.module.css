@@ -29,7 +29,7 @@
 
 .main {
   padding-top: 4rem;
-  /* border: 1px solid red; */
+
   display: flex;
   flex-direction: column;
   gap: 32px;
