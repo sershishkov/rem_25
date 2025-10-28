@@ -284,7 +284,6 @@ function NakladnToPrint({
               },
             }}
           >
-            {' '}
             <TableRow>
               <TableCell></TableCell>
               <TableCell colSpan={11}>
@@ -350,7 +349,6 @@ function NakladnToPrint({
               },
             }}
           >
-            {' '}
             <TableRow>
               <TableCell>
                 <Typography mb={2} variant='body2'>
