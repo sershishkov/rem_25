@@ -50,10 +50,10 @@ export default function AgroContractPrint({
     Math.round((totalSum - prePayPercentSum + Number.EPSILON) * 100) / 100;
   const totalSumPropis = FloatToSamplesInWordsUkr(totalSum);
   const prePayPercentSumPropis = FloatToSamplesInWordsUkr(
-    isNaN(prePayPercentSum) ? 0 : prePayPercentSum
+    Number.isNaN(prePayPercentSum) ? 0 : prePayPercentSum
   );
   const restPrePayPercentSumPropis = FloatToSamplesInWordsUkr(
-    isNaN(restPrePayPercentSum) ? 0 : restPrePayPercentSum
+    Number.isNaN(restPrePayPercentSum) ? 0 : restPrePayPercentSum
   );
   const arr__totalSum = totalSum.toFixed(2).split('.');
   const arr__prePayPercentSum = prePayPercentSum.toFixed(2).split('.');

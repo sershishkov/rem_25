@@ -103,10 +103,10 @@ export default function BaseContractPrint({
   const restPrePayNaklSumPropis = FloatToSamplesInWordsUkr(aktSum);
 
   const prePayPercentSumPropis = FloatToSamplesInWordsUkr(
-    isNaN(prePayPercentSum) ? 0 : prePayPercentSum
+    Number.isNaN(prePayPercentSum) ? 0 : prePayPercentSum
   );
   const restPrePayPercentSumPropis = FloatToSamplesInWordsUkr(
-    isNaN(restPrePayPercentSum) ? 0 : restPrePayPercentSum
+    Number.isNaN(restPrePayPercentSum) ? 0 : restPrePayPercentSum
   );
 
   const arr__totalSum = totalSum.toFixed(2).split('.');
@@ -329,14 +329,14 @@ export default function BaseContractPrint({
       <Typography
         variant='body2'
         className={classes['base-contr-paragraph']}
-        sx={{ display: p2_2_1 !== '' ? 'block' : 'none' }}
+        sx={{ display: p2_2_1 === '' ? 'none' : 'block' }}
       >
         {p2_2_1}
       </Typography>
       <Typography
         variant='body2'
         className={classes['base-contr-paragraph']}
-        sx={{ display: p2_2_2 !== '' ? 'block' : 'none' }}
+        sx={{ display: p2_2_2 === '' ? 'none' : 'block' }}
       >
         {p2_2_2}
       </Typography>
@@ -458,7 +458,7 @@ export default function BaseContractPrint({
       <Typography
         variant='body2'
         className={classes['base-contr-paragraph']}
-        sx={{ display: p4_2_7 !== '' ? 'block' : 'none' }}
+        sx={{ display: p4_2_7 === '' ? 'none' : 'block' }}
       >
         {p4_2_7}
       </Typography>

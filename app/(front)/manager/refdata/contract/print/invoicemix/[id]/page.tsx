@@ -149,22 +149,22 @@ export default function InvoiceMix({ params }: Readonly<ParamsProps>) {
         ) {
           let allThirdString = '';
           let allServString = '';
-          currentAkt.thirdPartyServices?.forEach(
-            (inner_item: I_ThirdPartyServiceInAkt) => {
-              allThirdString += `${
-                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                //@ts-ignore
-                inner_item.thirdPartyService.thirdPartyServiceName!
-              } ${inner_item.extraInformation!}, `;
-            }
-          );
-          currentAkt.serviceWorks?.forEach((inner_item: I_ServiceWorkInAkt) => {
+
+          for (const inner_item of currentAkt.thirdPartyServices) {
+            allThirdString += `${
+              // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+              //@ts-ignore
+              inner_item.thirdPartyService.thirdPartyServiceName!
+            } ${inner_item.extraInformation!}, `;
+          }
+
+          for (const inner_item of currentAkt.serviceWorks) {
             allServString += `${
               // eslint-disable-next-line @typescript-eslint/ban-ts-comment
               //@ts-ignore
               inner_item.serviceWork.serviceWorkName!
             } ${inner_item.extraInformation!}, `;
-          });
+          }
 
           const sumToShow = tempNaklSum + tempAktSum;
 

@@ -418,7 +418,7 @@ export default function CashFlowShow({
           <Grid sx={{ width: 150 }}>
             <MySelectAutoCompl
               selectName={`ourFirm`}
-              selectLabel={`Исполнитель`}
+              selectLabel={`Наша фирма`}
               fieldToShow={`clientShortName`}
               handleChangeSelects={handleChangeSelects}
               selectedOption={ourFirm ?? ''}
