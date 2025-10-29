@@ -9,6 +9,7 @@ import {
   item__add,
   get__all,
 } from '@/lib/actions/refdata.actions';
+import { separateFirms } from '@/lib/helpers/helperFunction';
 
 import Grid from '@mui/material/Grid';
 import Button from '@mui/material/Button';
@@ -104,20 +105,7 @@ function CashFlowAddEdit({
         '/accountant/refdata/workers'
       );
 
-      const allFirms = await get__all(
-        { page: '0', limit: '0', filter: '' },
-        '/manager/refdata/client'
-      );
-
-      const arr__Clients = allFirms.items.filter((l_client: I_Client) => {
-        const hasOurFirm = l_client.clientType?.some(
-          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-          //@ts-expect-error
-          (oneType) => oneType.clientTypeName === 'наша фирма'
-        );
-
-        return !hasOurFirm;
-      });
+      const { arr__Clients } = await separateFirms();
 
       setArr__Workers(all__Workers.items);
       setArr__CashFlowTypes(all__cashFlowTypes.items);

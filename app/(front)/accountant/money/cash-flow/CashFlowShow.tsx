@@ -6,11 +6,11 @@ import { get__all, delete__one } from '@/lib/actions/refdata.actions';
 import {
   I_Contract,
   I_Client,
-  I_ClientType,
   I_Worker,
   I_CashRegister,
   I_CashFlowType,
 } from '@/interfaces/refdata';
+import { separateFirms } from '@/lib/helpers/helperFunction';
 
 import Table from '@mui/material/Table';
 import TableHead from '@mui/material/TableHead';
@@ -169,33 +169,8 @@ export default function CashFlowShow({
         { page: '0', limit: '0', filter: '' },
         '/accountant/refdata/workers'
       );
-      const all__ClientTypes = await get__all(
-        { page: '0', limit: '0', filter: '' },
-        '/accountant/refdata/client-type'
-      );
-      const allFirms = await get__all(
-        { page: '0', limit: '0', filter: '' },
-        '/manager/refdata/client'
-      );
 
-      const ourFirmObj = all__ClientTypes.items.find(
-        (item: I_ClientType) => item.clientTypeName === 'наша фирма'
-      );
-      const arr__ourFirms: I_Client[] = [];
-      const arr__Clients: I_Client[] = [];
-
-      for (const item of allFirms.items) {
-        const hasOurFirm = item.clientType?.some(
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          (oneType: any) => oneType._id === ourFirmObj?._id
-        );
-
-        if (hasOurFirm) {
-          arr__ourFirms.push(item);
-        } else {
-          arr__Clients.push(item);
-        }
-      }
+      const { arr__ourFirms, arr__Clients } = await separateFirms();
 
       setCountTotalItems(getTotalItems.total);
       setTotalResults(arrToShow(getTotalItems.items));

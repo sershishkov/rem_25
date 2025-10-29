@@ -2,6 +2,8 @@ import { NextRequest } from 'next/server';
 import { monthsWorkBudjet } from '@/constants/constants';
 import { I_Client, I_ClientType } from '@/interfaces/refdata';
 
+import { get__all } from '@/lib/actions/refdata.actions';
+
 const genNumberByDate = (enteredDate: Date) => {
   const fullYear = enteredDate.getFullYear();
   const month =
@@ -112,19 +114,28 @@ export const setDefaultMonths = () => {
   };
 };
 
-export const separateFirms = (
-  all__ClientTypes: I_ClientType[],
-  allFirms: I_Client[]
-) => {
+export const separateFirms = async () => {
   const arr__ourFirms: I_Client[] = [];
   const arr__Clients: I_Client[] = [];
 
-  const ourFirmObj = all__ClientTypes.find(
+  const all__ClientTypes = await get__all(
+    { page: '0', limit: '0', filter: '' },
+    '/accountant/refdata/client-type'
+  );
+
+  const allFirms = await get__all(
+    { page: '0', limit: '0', filter: '' },
+    '/manager/refdata/client'
+  );
+
+  const ourFirmObj = all__ClientTypes.items.find(
     (item: I_ClientType) => item.clientTypeName === 'наша фирма'
   );
 
-  for (const item of allFirms) {
+  for (const item of allFirms.items) {
     const hasOurFirm = item.clientType?.some(
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      //@ts-ignore
       (oneType) => oneType._id === ourFirmObj?._id
     );
 

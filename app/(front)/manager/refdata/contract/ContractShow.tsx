@@ -159,10 +159,7 @@ export default function ContractShow({
         { page: '0', limit: '0', filter: '' },
         currentURL
       );
-      const allFirms = await get__all(
-        { page: '0', limit: '0', filter: '' },
-        '/manager/refdata/client'
-      );
+
       const contractTypes = await get__all(
         { page: '0', limit: '0', filter: '' },
         '/accountant/refdata/contract-type'
@@ -175,15 +172,8 @@ export default function ContractShow({
         { page: '0', limit: '0', filter: '' },
         '/accountant/refdata/workers'
       );
-      const all__ClientTypes = await get__all(
-        { page: '0', limit: '0', filter: '' },
-        '/accountant/refdata/client-type'
-      );
 
-      const { arr__ourFirms, arr__Clients } = separateFirms(
-        all__ClientTypes.items,
-        allFirms.items
-      );
+      const { arr__ourFirms, arr__Clients } = await separateFirms();
 
       setArr__OurFirms(arr__ourFirms);
       setArr__Clients(arr__Clients);

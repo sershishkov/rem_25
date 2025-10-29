@@ -260,15 +260,6 @@ export default function ContractAddEdit({
 
   useEffect(() => {
     const myGetAll = async () => {
-      const all__ClientTypes = await get__all(
-        { page: '0', limit: '0', filter: '' },
-        '/accountant/refdata/client-type'
-      );
-
-      const all__Clients = await get__all(
-        { page: '0', limit: '0', filter: '' },
-        '/manager/refdata/client'
-      );
       const all__ContractTypes = await get__all(
         { page: '0', limit: '0', filter: '' },
         '/accountant/refdata/contract-type'
@@ -281,10 +272,7 @@ export default function ContractAddEdit({
         { page: '0', limit: '0', filter: '' },
         '/accountant/refdata/workers'
       );
-      const { arr__ourFirms, arr__Clients } = separateFirms(
-        all__ClientTypes.items,
-        all__Clients.items
-      );
+      const { arr__ourFirms, arr__Clients } = await separateFirms();
 
       setArr__ourFirms(arr__ourFirms);
       setArr__Clients(arr__Clients);
