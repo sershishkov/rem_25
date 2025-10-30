@@ -221,7 +221,7 @@ export default function InvoiceAktPrint({ params }: Readonly<ParamsProps>) {
       contractObj={localContractObj!}
       typeNakl={typeAkt}
       naklSum={aktSum}
-      tableRows={tableRows}
+      tableRows={tableRows || []}
     />
   );
 }

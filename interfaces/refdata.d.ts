@@ -185,7 +185,7 @@ export interface I_Client {
   tax?: number;
   taxationType?: Types.ObjectId | I_TaxationType | string;
 
-  certificate_PDV: string;
+  certificate_PDV?: string;
   telNumber?: string;
   email?: string;
   clientType?: Types.ObjectId[] | I_ClientType[];
@@ -193,7 +193,13 @@ export interface I_Client {
 
 export interface I_Contract {
   _id?: string;
+  contractID?: string;
   contractNumber?: string;
+  ourFirmID?: string;
+  clientID?: string;
+  clientfirmTypeShortName?: string;
+  formatedContractDate?: string;
+  formatedEndWorkRemservis?: string;
   ourFirm?: Types.ObjectId | I_Client | string;
   client?: Types.ObjectId | I_Client | string;
   contractDate?: Date;
@@ -618,4 +624,66 @@ export interface I_ContractTempate {
   templateContractDescription: string; //Описание шаблона контракта
   contractPreambule: string; //Преамбула контракта
   contractBody: I_ContractTempateChapter[];
+}
+
+export interface I_TransformedClient {
+  client_firmID?: string;
+  client_firmTypeShortName?: string;
+  client_firmTypeLongName?: string;
+  client_firmLongName?: string;
+  client_firmShortName?: string;
+
+  client_postIndex?: string;
+  client_address?: string;
+  client_edrpou?: string;
+  client_inn?: string;
+  client_iban?: string;
+  client_iban_budget?: string;
+  client_firstName_imen?: string;
+  client_patronymic_imen?: string;
+  client_lastName_imen?: string;
+  client_firstName_rodit?: string;
+  client_patronymic_rodit?: string;
+  client_lastName_rodit?: string;
+  client_certificateNumber?: string;
+  client_representedBy?: string;
+  client_whichActsOnTheBasis?: string;
+  client_jobTitle?: string;
+  client_jobTitle_rodit?: string;
+  client_tax?: number;
+  client_taxationTypeName?: string;
+  client_certificate_PDV?: string;
+  client_telNumber?: string;
+  client_email?: string;
+}
+
+export interface I_TransformedExecutor {
+  executor_firmID?: string;
+  executor_firmTypeShortName?: string;
+  executor_firmTypeLongName?: string;
+  executor_firmLongName?: string;
+  executor_firmShortName?: string;
+
+  executor_postIndex?: string;
+  executor_address?: string;
+  executor_edrpou?: string;
+  executor_inn?: string;
+  executor_iban?: string;
+  executor_iban_budget?: string;
+  executor_firstName_imen?: string;
+  executor_patronymic_imen?: string;
+  executor_lastName_imen?: string;
+  executor_firstName_rodit?: string;
+  executor_patronymic_rodit?: string;
+  executor_lastName_rodit?: string;
+  executor_certificateNumber?: string;
+  executor_representedBy?: string;
+  executor_whichActsOnTheBasis?: string;
+  executor_jobTitle?: string;
+  executor_jobTitle_rodit?: string;
+  executor_tax?: number;
+  executor_taxationTypeName?: string;
+  executor_certificate_PDV?: string;
+  executor_telNumber?: string;
+  executor_email?: string;
 }

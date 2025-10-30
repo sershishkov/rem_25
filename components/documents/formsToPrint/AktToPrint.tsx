@@ -2,7 +2,12 @@ import React from 'react';
 
 import { FloatToSamplesInWordsUkr } from '@/lib/helpers/myPropisUkr';
 
-import { I_Client, I_Contract, I_WorkRows } from '@/interfaces/refdata';
+import {
+  I_TransformedClient,
+  I_TransformedExecutor,
+  I_Contract,
+  I_WorkRows,
+} from '@/interfaces/refdata';
 
 import { arr__typeAkt } from '@/constants/constants';
 
@@ -20,7 +25,7 @@ import classes from './styles.module.scss';
 function AktToPrint({
   aktOfWorkNumber,
   aktOfWorkDate,
-  ourFirmObj,
+  executorObj,
   clientObj,
   contractObj,
   typeAkt,
@@ -29,8 +34,8 @@ function AktToPrint({
 }: Readonly<{
   aktOfWorkNumber: string;
   aktOfWorkDate: Date;
-  ourFirmObj: I_Client;
-  clientObj: I_Client;
+  executorObj: I_TransformedExecutor;
+  clientObj: I_TransformedClient;
   contractObj: I_Contract;
 
   typeAkt: string;
@@ -46,49 +51,58 @@ function AktToPrint({
     // month: 'long',
     year: 'numeric',
   });
-  const contractDateToString = new Date(
-    contractObj.contractDate! ?? ''
-  ).toLocaleDateString('uk-UA', {
-    day: '2-digit',
-    month: 'long',
-    year: 'numeric',
-  });
 
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  //@ts-ignore
-  const ourFirm = `${ourFirmObj.firmType!.firmTypeShortName!} « ${
-    ourFirmObj?.clientShortName
-  } », ${ourFirmObj?.edrpou ? `ЄДРПОУ :${ourFirmObj?.edrpou}` : ''} ${
-    ourFirmObj?.inn ? `ІНН :${ourFirmObj?.inn}` : ''
-  }`;
+  const contractDateToString = contractObj?.formatedContractDate;
 
-  const ourFirmAddress = `${ourFirmObj?.postIndex}, ${ourFirmObj?.address}`;
+  let ourFirm = '';
 
-  const ourIBAN = ourFirmObj?.iban;
+  if (executorObj !== undefined && executorObj !== null) {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    //@ts-ignore
+    const edrpouPart = executorObj?.executor_edrpou
+      ? `ЄДРПОУ :${executorObj?.executor_edrpou}`
+      : '';
+    const innPart = executorObj?.executor_inn
+      ? `ІНН :${executorObj?.executor_inn}`
+      : '';
+    ourFirm =
+      `${executorObj?.executor_firmTypeShortName} « ${executorObj?.executor_firmShortName} », ${edrpouPart} ${innPart}`.trim();
+  }
 
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  //@ts-ignore
-  const payerFirm = `${clientObj.firmType!.firmTypeShortName!} « ${
-    clientObj?.clientShortName
-  } », ${clientObj?.edrpou ? `ЄДРПОУ :${clientObj?.edrpou}` : ''} ${
-    clientObj?.inn ? `ІНН :${clientObj?.inn}` : ''
-  }`;
+  const ourFirmAddress = `${executorObj?.executor_postIndex}, ${executorObj?.executor_address}`;
 
-  const clientFirmAddress = `${clientObj?.postIndex}, ${clientObj?.address}`;
+  const ourIBAN = executorObj?.executor_iban;
 
-  const clientIBAN = clientObj?.iban;
+  let payerFirm = '';
+
+  if (clientObj !== undefined && clientObj !== null) {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    //@ts-ignore
+    const clientEdrpouPart = clientObj?.client_edrpou
+      ? `ЄДРПОУ :${clientObj?.client_edrpou}`
+      : '';
+    const clientInnPart = clientObj?.client_inn
+      ? `ІНН :${clientObj?.client_inn}`
+      : '';
+    payerFirm =
+      `${clientObj?.client_firmTypeShortName} « ${clientObj?.client_firmShortName} », ${clientEdrpouPart} ${clientInnPart}`.trim();
+  }
+
+  const clientFirmAddress = `${clientObj?.client_postIndex}, ${clientObj?.client_address}`;
+
+  const clientIBAN = clientObj?.client_iban;
 
   const contractNumber = contractObj?.contractNumber;
   const ourBoss = `${
-    ourFirmObj?.firstName_imen
-  } ${ourFirmObj?.lastName_imen?.toUpperCase()}`;
-  const ourBossLong = `${ourFirmObj?.lastName_imen} ${ourFirmObj?.firstName_imen} ${ourFirmObj?.patronymic_imen}`;
+    executorObj?.executor_firstName_imen
+  } ${executorObj?.executor_lastName_imen?.toUpperCase()}`;
+  const ourBossLong = `${executorObj?.executor_lastName_imen} ${executorObj?.executor_firstName_imen} ${executorObj?.executor_patronymic_rodit}`;
 
   const clientBoss = `${
-    clientObj?.firstName_imen
-  } ${clientObj?.lastName_imen?.toUpperCase()}`;
+    clientObj?.client_firstName_imen
+  } ${clientObj?.client_lastName_imen?.toUpperCase()}`;
 
-  const clientBossLong = `${clientObj?.lastName_imen} ${clientObj?.firstName_imen} ${clientObj?.patronymic_imen}`;
+  const clientBossLong = `${clientObj?.client_lastName_imen} ${clientObj?.client_firstName_imen} ${clientObj?.client_patronymic_imen}`;
 
   return (
     <div className={classes.page} id='page'>

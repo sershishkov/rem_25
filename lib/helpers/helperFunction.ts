@@ -2,7 +2,7 @@ import { NextRequest } from 'next/server';
 import { monthsWorkBudjet } from '@/constants/constants';
 import { I_Client, I_ClientType } from '@/interfaces/refdata';
 
-import { get__all } from '@/lib/actions/refdata.actions';
+import { get__all, item__get_one } from '@/lib/actions/refdata.actions';
 
 const genNumberByDate = (enteredDate: Date) => {
   const fullYear = enteredDate.getFullYear();
@@ -160,4 +160,139 @@ export const commonSearchParams = (request: NextRequest) => {
   const filterSTR = url.searchParams.get('filter') ?? '';
 
   return { url, pageSize, skip, filterSTR };
+};
+
+export const getAll_ContractFields = async (contractId: string) => {
+  const currentContract = await item__get_one(
+    { _id: contractId },
+    '/manager/refdata/contract'
+  );
+
+  if (currentContract) {
+    return {
+      contractID: (currentContract._id as string) || '',
+      contractNumber: currentContract.contractNumber || '',
+      ourFirmID: (currentContract.ourFirm._id as string) || '',
+      clientID: (currentContract.client._id as string) || '',
+      clientfirmTypeShortName:
+        currentContract.client.firmType.firmTypeShortName || '',
+      formatedContractDate:
+        new Date(currentContract.contractDate).toLocaleDateString('uk-UA', {
+          day: '2-digit',
+          month: 'long',
+          year: 'numeric',
+        }) || '',
+      contractDescription: currentContract.contractDescription || '',
+      workAddress: currentContract.workAddress || '',
+      contractTypeName: currentContract.contractType.contractTypeName || '',
+
+      guaranteePeriod: currentContract.guaranteePeriod || '',
+
+      prepaymentPercentage: currentContract.prepaymentPercentage || 0,
+
+      invoiceNumberBase: currentContract.invoiceNumberBase || '',
+      invoiceNumberNakl: currentContract.invoiceNumberNakl || '',
+      invoiceNumberAkt: currentContract.invoiceNumberAkt || '',
+
+      aktNumber: currentContract.aktNumber || '',
+      naklNumber: currentContract.naklNumber || '',
+      koshtorisNumber: currentContract.koshtorisNumber || '',
+
+      contrProectAvtorskNumber: currentContract.contrProectAvtorskNumber || '',
+      aktProectAvtorskNumber: currentContract.aktProectAvtorskNumber || '',
+
+      jurnalAvtoskiyNumber: currentContract.jurnalAvtoskiyNumber || '',
+      jurnalRabotNumber: currentContract.jurnalRabotNumber || '',
+      prikazGipNumber: currentContract.prikazGipNumber || '',
+      prikazEngineeNumber: currentContract.prikazEngineeNumber || '',
+      prikazOhranaTrudaNumber: currentContract.prikazOhranaTrudaNumber || '',
+
+      proectnSumBudjet: currentContract.proectnSumBudjet || 0,
+      avtorskSumBudjet: currentContract.avtorskSumBudjet || 0,
+      expertizaSumBudjet: currentContract.expertizaSumBudjet || 0,
+      tehnadzorSumBudjet: currentContract.tehnadzorSumBudjet || 0,
+      tehnadzorSumBudjetGlava1_9:
+        currentContract.tehnadzorSumBudjetGlava1_9 || 0,
+
+      zvedeniySumBudjet: currentContract.zvedeniySumBudjet || 0,
+      dogovornayaSumBudjet: currentContract.dogovornayaSumBudjet || 0,
+      dopUgodaSum: currentContract.dopUgodaSum || 0,
+
+      salaryMin: currentContract.salaryMin || 0,
+      salaryLevel_3_8: currentContract.salaryLevel_3_8 || 0,
+      planPributokSum: currentContract.planPributokSum || 0,
+      adminVytratySum: currentContract.adminVytratySum || 0,
+      salaryOneDaySum: currentContract.salaryOneDaySum || 0,
+      lifeTime: currentContract.lifeTime || 0,
+      whereWirkIsPerfomed: currentContract.whereWirkIsPerfomed || '',
+      servWorkShortForJournal: currentContract.servWorkShortForJournal || '',
+
+      paymentSourceProectnAvt: currentContract.paymentSourceProectnAvt || '',
+      startMonthWorkBudjet: currentContract.startMonthWorkBudjet || '',
+      endMonthWorkBudjet: currentContract.endMonthWorkBudjet || '',
+      kodDkBudjet: currentContract.kodDkBudjet || '',
+
+      formatedEndWorkRemservis:
+        new Date(currentContract.endWorkRemservis).toLocaleDateString('uk-UA', {
+          day: '2-digit',
+          month: 'long',
+          year: 'numeric',
+        }) || '',
+
+      remsCalendarGrafikUnit: currentContract.remsCalendarGrafikUnit || '',
+      remsCalendarGrafikAmount: currentContract.remsCalendarGrafikAmount || 0,
+
+      remsAktSkrytRabotWork: currentContract.remsAktSkrytRabotWork || '',
+      remsAktSkrytRabotMaterial:
+        currentContract.remsAktSkrytRabotMaterial || '',
+    };
+  } else {
+    return undefined;
+  }
+};
+
+export const getAll_FirmFields = async (
+  firmID: string,
+  mode: 'client' | 'executor'
+) => {
+  const currentFirm = await item__get_one(
+    { _id: firmID },
+    '/manager/refdata/client'
+  );
+  if (currentFirm) {
+    return {
+      [`${mode}_firmID`]: (currentFirm._id as string) || '',
+      [`${mode}_firmTypeShortName`]:
+        currentFirm.firmType.firmTypeShortName || '',
+      [`${mode}_firmTypeLongName`]: currentFirm.firmType.firmTypeLongName || '',
+      [`${mode}_firmLongName`]: currentFirm.clientLongName || '',
+      [`${mode}_firmShortName`]: currentFirm.clientShortName || '',
+
+      [`${mode}_postIndex`]: currentFirm.postIndex || '',
+      [`${mode}_address`]: currentFirm.address || '',
+      [`${mode}_edrpou`]: currentFirm.edrpou || '',
+      [`${mode}_inn`]: currentFirm.inn || '',
+      [`${mode}_iban`]: currentFirm.iban || '',
+      [`${mode}_iban_budget`]: currentFirm.iban_budget || '',
+      [`${mode}_firstName_imen`]: currentFirm.firstName_imen || '',
+      [`${mode}_patronymic_imen`]: currentFirm.patronymic_imen || '',
+      [`${mode}_lastName_imen`]: currentFirm.lastName_imen || '',
+      [`${mode}_firstName_rodit`]: currentFirm.firstName_rodit || '',
+      [`${mode}_patronymic_rodit`]: currentFirm.patronymic_rodit || '',
+      [`${mode}_lastName_rodit`]: currentFirm.lastName_rodit || '',
+      [`${mode}_certificateNumber`]: currentFirm.certificateNumber || '',
+      [`${mode}_representedBy`]: currentFirm.representedBy || '',
+      [`${mode}_whichActsOnTheBasis`]: currentFirm.whichActsOnTheBasis || '',
+      [`${mode}_jobTitle`]: currentFirm.jobTitle || '',
+      [`${mode}_jobTitle_rodit`]: currentFirm.jobTitle_rodit || '',
+      [`${mode}_tax`]: currentFirm.tax || 0,
+      [`${mode}_taxationTypeName`]:
+        currentFirm.taxationType.taxationTypeName || '',
+      [`${mode}_certificate_PDV`]: currentFirm.certificate_PDV || '',
+      [`${mode}_telNumber`]: currentFirm.telNumber || '',
+      [`${mode}_email`]: currentFirm.email || '',
+    };
+  } else {
+    return undefined;
+  }
 };
