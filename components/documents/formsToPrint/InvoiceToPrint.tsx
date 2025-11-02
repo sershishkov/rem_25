@@ -25,7 +25,7 @@ import classes from './styles.module.scss';
 function InvoiceToPrint({
   nakladnayaNumber,
   nakladnayaDate,
-  ourFirmObj,
+  executorObj,
   clientObj,
   contractObj,
   typeNakl,
@@ -34,7 +34,7 @@ function InvoiceToPrint({
 }: Readonly<{
   nakladnayaNumber: string;
   nakladnayaDate: Date;
-  ourFirmObj: I_Client;
+  executorObj: I_Client;
   clientObj: I_Client;
   contractObj: I_Contract;
 
@@ -54,71 +54,85 @@ function InvoiceToPrint({
       year: 'numeric',
     }
   );
+
   const contractDateToString = new Date(
-    contractObj.contractDate! ?? ''
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    //@ts-ignore
+    contractObj?.contractDate
   ).toLocaleDateString('uk-UA', {
     day: '2-digit',
     month: 'long',
     year: 'numeric',
   });
-
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  //@ts-ignore
-  const ourFirm = `${ourFirmObj.firmType!.firmTypeShortName!} « ${
-    ourFirmObj?.clientShortName
-  } », ${ourFirmObj?.edrpou ? `ЄДРПОУ :${ourFirmObj?.edrpou}` : ''} ${
-    ourFirmObj?.inn ? `ІНН :${ourFirmObj?.inn}` : ''
-  }`;
-
-  const ourFirmAddress = `${ourFirmObj?.postIndex}, ${ourFirmObj?.address}`;
-
-  const ourIBAN = ourFirmObj?.iban;
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  //@ts-ignore
-  const ourTaxationType = `${ourFirmObj.firmType!.firmTypeShortName!} « ${
-    ourFirmObj?.clientShortName
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    //@ts-ignore
-  } » ${ourFirmObj?.taxationType.taxationTypeName}`;
-
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  //@ts-ignore
-  const payerFirm = `${clientObj.firmType!.firmTypeShortName!} « ${
-    clientObj?.clientShortName
-  } », ${clientObj?.edrpou ? `ЄДРПОУ :${clientObj?.edrpou}` : ''} ${
-    clientObj?.inn ? `ІНН :${clientObj?.inn}` : ''
-  }`;
-
-  const clientFirmAddress = `${clientObj?.postIndex}, ${clientObj?.address}`;
-
-  const clientIBAN = clientObj?.iban;
-
   const contractNumber = contractObj?.contractNumber;
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   //@ts-ignore
-  const firmType = contractObj?.client?.firmType?.firmTypeShortName;
+  const contractType = contractObj?.contractType?.contractTypeName;
+
+  let executor_typeAndShortNameAndEDRPOU_INN = '';
+  let executor_firmTypeShortName = '';
+
+  let executor_firmAddressWithPostIndex = '';
+  let executor_iban = '';
+  let executor_TaxationType = '';
+
+  let client_typeAndShortNameAndEDRPOU_INN = '';
+
+  let client_firmAddressWithPostIndex = '';
+  let client_iban = '';
+
+  if (executorObj !== undefined) {
+    const edrpouPart = executorObj.edrpou
+      ? `ЄДРПОУ :${executorObj.edrpou}`
+      : '';
+    const innPart = executorObj.inn ? `ІНН :${executorObj.inn}` : '';
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    //@ts-ignore
+    executor_firmTypeShortName = executorObj.firmType?.firmTypeShortName;
+
+    executor_typeAndShortNameAndEDRPOU_INN =
+      `${executor_firmTypeShortName}« ${executorObj.clientShortName} », ${edrpouPart} ${innPart}`.trim();
+
+    executor_firmAddressWithPostIndex =
+      ` ${executorObj.postIndex}, ${executorObj.address}`.trim();
+    executor_iban = executorObj.iban || '';
+
+    executor_TaxationType = `${
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      //@ts-ignore
+      executorObj.firmType?.firmTypeShortName
+    } « ${
+      executorObj.clientShortName
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      //@ts-ignore
+    } » ${executorObj.taxationType?.taxationTypeName}`;
+  }
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   //@ts-ignore
-  const contractType = contractObj?.contractType?.contractTypeName;
+
+  if (clientObj !== undefined) {
+    const edrpouPart = clientObj.edrpou ? `ЄДРПОУ :${clientObj.edrpou}` : '';
+    const innPart = clientObj.inn ? `ІНН :${clientObj.inn}` : '';
+
+    client_typeAndShortNameAndEDRPOU_INN =
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      //@ts-ignore
+      `${clientObj.firmType?.firmTypeShortName}« ${clientObj.clientShortName} », ${edrpouPart} ${innPart}`.trim();
+
+    client_firmAddressWithPostIndex =
+      ` ${clientObj.postIndex}, ${clientObj.address}`.trim();
+    client_iban = clientObj.iban || '';
+  }
+
   let contractDescription;
-  if (
-    contractType === 'Общий' ||
-    contractType === 'Общий Сумма' ||
-    contractType === 'Предоплата Частичная' ||
-    contractType === 'Предоплата Материал' ||
-    contractType === 'Предоплата 100%' ||
-    contractType === 'Кошторис Сумма' ||
-    contractType === 'Кошторис Частичная Предоплата' ||
-    contractType === 'Кошторис Предоплата Материал' ||
-    contractType === 'Кошторис Предоплата 100%'
-  ) {
-    const injectPhrase = arr__TypeOfOSBB.includes(firmType)
+  if (contractType && contractType.startsWith('Поточный')) {
+    const injectPhrase = arr__TypeOfOSBB.includes(executor_firmTypeShortName)
       ? 'у житловому будинку за адресою: '
       : ' за адресою:';
     const workAddress = contractObj?.workAddress;
     contractDescription = `${contractObj?.contractDescription} ${injectPhrase} ${workAddress}`;
   } else {
-    contractDescription = contractObj.contractDescription!;
+    contractDescription = contractObj?.contractDescription;
   }
 
   return (
@@ -154,7 +168,9 @@ function InvoiceToPrint({
                 <Typography variant='body2'>Постачальник:</Typography>
               </TableCell>
               <TableCell colSpan={9}>
-                <Typography variant='body2'>{ourFirm}</Typography>
+                <Typography variant='body2'>
+                  {executor_typeAndShortNameAndEDRPOU_INN}
+                </Typography>
               </TableCell>
             </TableRow>
             <TableRow>
@@ -162,7 +178,9 @@ function InvoiceToPrint({
                 <Typography variant='body2'>Адреса:</Typography>
               </TableCell>
               <TableCell colSpan={9}>
-                <Typography variant='body2'>{ourFirmAddress}</Typography>
+                <Typography variant='body2'>
+                  {executor_firmAddressWithPostIndex}
+                </Typography>
               </TableCell>
             </TableRow>
             <TableRow>
@@ -170,12 +188,12 @@ function InvoiceToPrint({
                 <Typography variant='body2'>IBAN:</Typography>
               </TableCell>
               <TableCell colSpan={9}>
-                <Typography variant='body2'>{ourIBAN}</Typography>
+                <Typography variant='body2'>{executor_iban}</Typography>
               </TableCell>
             </TableRow>
             <TableRow>
               <TableCell align='left' colSpan={12}>
-                <Typography variant='body2'>{ourTaxationType}</Typography>
+                <Typography variant='body2'>{executor_TaxationType}</Typography>
               </TableCell>
             </TableRow>
             <TableRow sx={{ height: '10px' }}>
@@ -193,7 +211,9 @@ function InvoiceToPrint({
                 <Typography variant='body2'>Платник:</Typography>
               </TableCell>
               <TableCell colSpan={9}>
-                <Typography variant='body2'>{payerFirm}</Typography>
+                <Typography variant='body2'>
+                  {client_typeAndShortNameAndEDRPOU_INN}
+                </Typography>
               </TableCell>
             </TableRow>
             <TableRow>
@@ -201,7 +221,9 @@ function InvoiceToPrint({
                 <Typography variant='body2'>Адреса:</Typography>
               </TableCell>
               <TableCell colSpan={9}>
-                <Typography variant='body2'>{clientFirmAddress}</Typography>
+                <Typography variant='body2'>
+                  {client_firmAddressWithPostIndex}
+                </Typography>
               </TableCell>
             </TableRow>
             <TableRow>
@@ -209,7 +231,7 @@ function InvoiceToPrint({
                 <Typography variant='body2'>IBAN:</Typography>
               </TableCell>
               <TableCell colSpan={9}>
-                <Typography variant='body2'>{clientIBAN}</Typography>
+                <Typography variant='body2'>{client_iban}</Typography>
               </TableCell>
             </TableRow>
             <TableRow>
@@ -306,7 +328,6 @@ function InvoiceToPrint({
               },
             }}
           >
-            {' '}
             <TableRow>
               <TableCell></TableCell>
               <TableCell colSpan={11}>

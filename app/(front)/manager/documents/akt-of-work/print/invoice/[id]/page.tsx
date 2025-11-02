@@ -13,6 +13,7 @@ import {
   I_LProduct,
   I_DocumentNakladnaya,
 } from '@/interfaces/refdata';
+
 import { arr__TypeOfOSBB } from '@/constants/constants';
 
 const currentURL = '/manager/documents/akt-of-work';
@@ -30,7 +31,9 @@ export default function InvoiceAktPrint({ params }: Readonly<ParamsProps>) {
 
   const [localOurFirmObj, setLocalOurFirmObj] = useState<I_Client>();
   const [localClientObj, setLocalClientObj] = useState<I_Client>();
-  const [localContractObj, setLocalContractObj] = useState<I_Contract>();
+  const [localContractObj, setLocalContractObj] = useState<
+    Partial<I_Contract> | undefined
+  >(undefined);
 
   const { invoiceNumber, invoiceDate, typeAkt, aktSum } = formData;
 
@@ -44,25 +47,21 @@ export default function InvoiceAktPrint({ params }: Readonly<ParamsProps>) {
             '/manager/refdata/contract'
           );
 
-          const currentOurFirm = await item__get_one(
+          const currentExecutorFirm = await item__get_one(
             { _id: item.aktOurFirm },
             '/manager/refdata/client'
           );
 
-          const currentClient = await item__get_one(
+          const currentClientFirm = await item__get_one(
             { _id: item.aktClient },
             '/manager/refdata/client'
           );
 
-          const localContactType =
-            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-            //@ts-ignore
-            currentContract?.contractType?.contractTypeName;
-          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-          //@ts-ignore
-          const firmType = currentContract?.client?.firmType?.firmTypeShortName;
+          const localContactType = currentContract?.contractTypeName as string;
+          const clientfirmTypeShortName =
+            currentContract?.clientfirmTypeShortName;
 
-          const injectPhrase = arr__TypeOfOSBB.includes(firmType)
+          const injectPhrase = arr__TypeOfOSBB.includes(clientfirmTypeShortName)
             ? 'у житловому будинку за адресою: '
             : ' за адресою:';
           const workAddress = currentContract?.workAddress;
@@ -70,27 +69,22 @@ export default function InvoiceAktPrint({ params }: Readonly<ParamsProps>) {
 
           setFormData((prevState) => ({
             ...prevState,
-            invoiceNumber: currentContract.invoiceNumberAkt,
-            invoiceDate: new Date(currentContract.contractDate),
+            invoiceNumber: currentContract?.invoiceNumberAkt,
+            invoiceDate: new Date(currentContract?.contractDate),
             typeAkt: item.typeAkt,
             aktSum: Number(item.totalSums.totalAktSum),
           }));
-          setLocalOurFirmObj(currentOurFirm);
-          setLocalClientObj(currentClient);
+          setLocalOurFirmObj(currentExecutorFirm);
+          setLocalClientObj(currentClientFirm);
           setLocalContractObj(currentContract);
 
-          if (
-            localContactType === 'Кошторис Сумма' ||
-            localContactType === 'Кошторис Частичная Предоплата' ||
-            localContactType === 'Кошторис Предоплата Материал' ||
-            localContactType === 'Кошторис Предоплата 100%'
-          ) {
+          if (localContactType && localContactType.includes('Кошторис')) {
             const localArrOfRelNakl = await get__all(
               {
                 page: '0',
                 limit: '0',
                 filter: '',
-                contract: currentContract._id,
+                contract: currentContract?.contractID,
               },
               `/manager/documents/nakladnaya`
             );
@@ -216,9 +210,9 @@ export default function InvoiceAktPrint({ params }: Readonly<ParamsProps>) {
     <InvoiceToPrint
       nakladnayaNumber={invoiceNumber}
       nakladnayaDate={invoiceDate}
-      ourFirmObj={localOurFirmObj!}
-      clientObj={localClientObj!}
-      contractObj={localContractObj!}
+      executorObj={localOurFirmObj as I_Client}
+      clientObj={localClientObj as I_Client}
+      contractObj={localContractObj as I_Contract}
       typeNakl={typeAkt}
       naklSum={aktSum}
       tableRows={tableRows || []}

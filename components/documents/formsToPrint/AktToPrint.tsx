@@ -1,13 +1,6 @@
-import React from 'react';
-
 import { FloatToSamplesInWordsUkr } from '@/lib/helpers/myPropisUkr';
 
-import {
-  I_TransformedClient,
-  I_TransformedExecutor,
-  I_Contract,
-  I_WorkRows,
-} from '@/interfaces/refdata';
+import { I_Contract, I_WorkRows, I_Client } from '@/interfaces/refdata';
 
 import { arr__typeAkt } from '@/constants/constants';
 
@@ -34,8 +27,8 @@ function AktToPrint({
 }: Readonly<{
   aktOfWorkNumber: string;
   aktOfWorkDate: Date;
-  executorObj: I_TransformedExecutor;
-  clientObj: I_TransformedClient;
+  executorObj: I_Client;
+  clientObj: I_Client;
   contractObj: I_Contract;
 
   typeAkt: string;
@@ -52,57 +45,72 @@ function AktToPrint({
     year: 'numeric',
   });
 
-  const contractDateToString = contractObj?.formatedContractDate;
-
-  let ourFirm = '';
-
-  if (executorObj !== undefined && executorObj !== null) {
+  const contractDateToString = new Date(
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     //@ts-ignore
-    const edrpouPart = executorObj?.executor_edrpou
-      ? `ЄДРПОУ :${executorObj?.executor_edrpou}`
-      : '';
-    const innPart = executorObj?.executor_inn
-      ? `ІНН :${executorObj?.executor_inn}`
-      : '';
-    ourFirm =
-      `${executorObj?.executor_firmTypeShortName} « ${executorObj?.executor_firmShortName} », ${edrpouPart} ${innPart}`.trim();
-  }
-
-  const ourFirmAddress = `${executorObj?.executor_postIndex}, ${executorObj?.executor_address}`;
-
-  const ourIBAN = executorObj?.executor_iban;
-
-  let payerFirm = '';
-
-  if (clientObj !== undefined && clientObj !== null) {
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    //@ts-ignore
-    const clientEdrpouPart = clientObj?.client_edrpou
-      ? `ЄДРПОУ :${clientObj?.client_edrpou}`
-      : '';
-    const clientInnPart = clientObj?.client_inn
-      ? `ІНН :${clientObj?.client_inn}`
-      : '';
-    payerFirm =
-      `${clientObj?.client_firmTypeShortName} « ${clientObj?.client_firmShortName} », ${clientEdrpouPart} ${clientInnPart}`.trim();
-  }
-
-  const clientFirmAddress = `${clientObj?.client_postIndex}, ${clientObj?.client_address}`;
-
-  const clientIBAN = clientObj?.client_iban;
-
+    contractObj?.contractDate
+  ).toLocaleDateString('uk-UA', {
+    day: '2-digit',
+    month: 'long',
+    year: 'numeric',
+  });
   const contractNumber = contractObj?.contractNumber;
-  const ourBoss = `${
-    executorObj?.executor_firstName_imen
-  } ${executorObj?.executor_lastName_imen?.toUpperCase()}`;
-  const ourBossLong = `${executorObj?.executor_lastName_imen} ${executorObj?.executor_firstName_imen} ${executorObj?.executor_patronymic_rodit}`;
 
-  const clientBoss = `${
-    clientObj?.client_firstName_imen
-  } ${clientObj?.client_lastName_imen?.toUpperCase()}`;
+  let executor_typeAndShortNameAndEDRPOU_INN = '';
+  let executor_bossShort = '';
+  let executor_bossLongImenitelny = '';
+  let executor_firmAddressWithPostIndex = '';
+  let executor_iban = '';
 
-  const clientBossLong = `${clientObj?.client_lastName_imen} ${clientObj?.client_firstName_imen} ${clientObj?.client_patronymic_imen}`;
+  let client_typeAndShortNameAndEDRPOU_INN = '';
+  let client_bossShort = '';
+  let client_bossLongImenitelny = '';
+  let client_firmAddressWithPostIndex = '';
+  let client_iban = '';
+
+  if (executorObj !== undefined) {
+    const edrpouPart = executorObj.edrpou
+      ? `ЄДРПОУ :${executorObj.edrpou}`
+      : '';
+    const innPart = executorObj.inn ? `ІНН :${executorObj.inn}` : '';
+
+    executor_typeAndShortNameAndEDRPOU_INN =
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      //@ts-ignore
+      `${executorObj.firmType?.firmTypeShortName}« ${executorObj.clientShortName} », ${edrpouPart} ${innPart}`.trim();
+
+    executor_bossShort = `${
+      executorObj.firstName_imen
+    } ${executorObj.lastName_imen?.toUpperCase()}`.trim();
+
+    executor_bossLongImenitelny =
+      `${executorObj.lastName_imen} ${executorObj.firstName_imen} ${executorObj.patronymic_imen} `.trim();
+
+    executor_firmAddressWithPostIndex =
+      ` ${executorObj.postIndex}, ${executorObj.address}`.trim();
+    executor_iban = executorObj.iban || '';
+  }
+
+  if (clientObj !== undefined) {
+    const edrpouPart = clientObj.edrpou ? `ЄДРПОУ :${clientObj.edrpou}` : '';
+    const innPart = clientObj.inn ? `ІНН :${clientObj.inn}` : '';
+
+    client_typeAndShortNameAndEDRPOU_INN =
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      //@ts-ignore
+      `${clientObj.firmType?.firmTypeShortName}« ${clientObj.clientShortName} », ${edrpouPart} ${innPart}`.trim();
+
+    client_bossShort = `${
+      clientObj.firstName_imen
+    } ${clientObj.lastName_imen?.toUpperCase()}`.trim();
+
+    client_bossLongImenitelny =
+      `${clientObj.lastName_imen} ${clientObj.firstName_imen} ${clientObj.patronymic_imen} `.trim();
+
+    client_firmAddressWithPostIndex =
+      ` ${clientObj.postIndex}, ${clientObj.address}`.trim();
+    client_iban = clientObj.iban || '';
+  }
 
   return (
     <div className={classes.page} id='page'>
@@ -135,43 +143,47 @@ function AktToPrint({
             </TableRow>
             <TableRow>
               <TableCell sx={{ width: '50%' }}>
-                <Typography variant='body2'>{ourFirm}</Typography>
-              </TableCell>
-              <TableCell sx={{ width: '50%' }}>
-                <Typography variant='body2'>{payerFirm}</Typography>
-              </TableCell>
-            </TableRow>
-            <TableRow>
-              <TableCell sx={{ width: '50%' }}>
                 <Typography variant='body2'>
-                  Адреса: {ourFirmAddress}
+                  {client_typeAndShortNameAndEDRPOU_INN}
                 </Typography>
               </TableCell>
               <TableCell sx={{ width: '50%' }}>
                 <Typography variant='body2'>
-                  Адреса: {clientFirmAddress}
+                  {executor_typeAndShortNameAndEDRPOU_INN}
                 </Typography>
               </TableCell>
             </TableRow>
             <TableRow>
               <TableCell sx={{ width: '50%' }}>
-                <Typography variant='body2'>IBAN: {ourIBAN}</Typography>
+                <Typography variant='body2'>
+                  Адреса: {executor_firmAddressWithPostIndex}
+                </Typography>
               </TableCell>
               <TableCell sx={{ width: '50%' }}>
-                <Typography variant='body2'>IBAN: {clientIBAN}</Typography>
+                <Typography variant='body2'>
+                  Адреса: {client_firmAddressWithPostIndex}
+                </Typography>
+              </TableCell>
+            </TableRow>
+            <TableRow>
+              <TableCell sx={{ width: '50%' }}>
+                <Typography variant='body2'>IBAN: {executor_iban}</Typography>
+              </TableCell>
+              <TableCell sx={{ width: '50%' }}>
+                <Typography variant='body2'>IBAN: {client_iban}</Typography>
               </TableCell>
             </TableRow>
             <TableRow>
               <TableCell colSpan={2}>
                 <Typography variant='h5' align='center'>
-                  {aktCaption}
+                  {aktCaption || ''}
                 </Typography>
               </TableCell>
             </TableRow>
             <TableRow>
               <TableCell colSpan={2}>
                 <Typography variant='h6' align='center'>
-                  Від &quot;___&quot; _______________{aktDateToString} р.
+                  Від &quot;___&quot; _______________{aktDateToString || ''} р.
                 </Typography>
               </TableCell>
             </TableRow>
@@ -200,7 +212,8 @@ function AktToPrint({
             <TableRow>
               <TableCell colSpan={2}>
                 <Typography variant='body2'>
-                  Договір № {contractNumber} від {contractDateToString}
+                  Договір № {contractNumber || ''} від{' '}
+                  {contractDateToString || ''}
                 </Typography>
               </TableCell>
             </TableRow>
@@ -211,7 +224,9 @@ function AktToPrint({
                 </Typography>
               </TableCell>
               <TableCell sx={{ width: '40%' }}>
-                <Typography variant='body2'>{ourBossLong}</Typography>
+                <Typography variant='body2'>
+                  {executor_bossLongImenitelny}
+                </Typography>
               </TableCell>
             </TableRow>
             <TableRow>
@@ -221,7 +236,9 @@ function AktToPrint({
                 </Typography>
               </TableCell>
               <TableCell sx={{ width: '40%' }}>
-                <Typography variant='body2'>{clientBossLong}</Typography>
+                <Typography variant='body2'>
+                  {client_bossLongImenitelny}
+                </Typography>
               </TableCell>
             </TableRow>
             <TableRow>
@@ -405,7 +422,7 @@ function AktToPrint({
                   ></Grid>
                   <Grid>
                     <Typography variant='body1' align='right'>
-                      {ourBoss}
+                      {executor_bossShort}
                     </Typography>
                   </Grid>
                 </Grid>
@@ -421,7 +438,7 @@ function AktToPrint({
                   ></Grid>
                   <Grid>
                     <Typography variant='body1' align='right'>
-                      {clientBoss}
+                      {client_bossShort}
                     </Typography>
                   </Grid>
                 </Grid>

@@ -6,18 +6,12 @@ import AktToPrint from '@/components/documents/formsToPrint/AktToPrint';
 import { ParamsProps } from '@/interfaces/CommonInterfaces';
 import {
   I_Contract,
-  I_TransformedExecutor,
-  I_TransformedClient,
+  I_Client,
   I_ThirdPartyServiceInAkt,
   I_ServiceWorkInAkt,
   I_WorkRows,
   I_DocumentNakladnaya,
 } from '@/interfaces/refdata';
-
-import {
-  getAll_ContractFields,
-  getAll_FirmFields,
-} from '@/lib/helpers/helperFunction';
 
 import { arr__TypeOfOSBB } from '@/constants/constants';
 
@@ -34,9 +28,8 @@ function AktOfWorkPrint({ params }: Readonly<ParamsProps>) {
   const [formData, setFormData] = useState(initState);
   const [tableRows, setTableRows] = useState<I_WorkRows[]>([]);
 
-  const [localOurFirmObj, setLocalOurFirmObj] =
-    useState<I_TransformedExecutor>();
-  const [localClientObj, setLocalClientObj] = useState<I_TransformedClient>();
+  const [localOurFirmObj, setLocalOurFirmObj] = useState<I_Client>();
+  const [localClientObj, setLocalClientObj] = useState<I_Client>();
   // allow partial contract shape returned by helper; component consumer should handle missing fields
   const [localContractObj, setLocalContractObj] = useState<
     Partial<I_Contract> | undefined
@@ -50,21 +43,22 @@ function AktOfWorkPrint({ params }: Readonly<ParamsProps>) {
         const item = await item__get_one({ _id: id }, currentURL);
 
         if (item) {
-          const currentContract = await getAll_ContractFields(
-            item.contract._id
+          const currentContract = await item__get_one(
+            { _id: item.contract._id },
+            '/manager/refdata/contract'
           );
 
-          const currentOurFirm = await getAll_FirmFields(
-            item.aktOurFirm,
-            'executor'
+          const currentExecutorFirm = await item__get_one(
+            { _id: item.aktOurFirm },
+            '/manager/refdata/client'
           );
 
-          const currentClient = await getAll_FirmFields(
-            item.aktClient,
-            'client'
+          const currentClientFirm = await item__get_one(
+            { _id: item.aktClient },
+            '/manager/refdata/client'
           );
 
-          const localContactType = currentContract?.contractTypeName;
+          const localContactType = currentContract?.contractTypeName as string;
 
           const clientfirmTypeShortName =
             currentContract?.clientfirmTypeShortName;
@@ -82,17 +76,11 @@ function AktOfWorkPrint({ params }: Readonly<ParamsProps>) {
             typeAkt: item.typeAkt,
             aktSum: Number(item.totalSums.totalAktSum),
           }));
-          setLocalOurFirmObj(currentOurFirm);
-          setLocalClientObj(currentClient);
+          setLocalOurFirmObj(currentExecutorFirm);
+          setLocalClientObj(currentClientFirm);
           setLocalContractObj(currentContract);
 
-          if (
-            localContactType.includes('Кошторис')
-            // localContactType === 'Кошторис Сумма' ||
-            // localContactType === 'Кошторис Частичная Предоплата' ||
-            // localContactType === 'Кошторис Предоплата Материал' ||
-            // localContactType === 'Кошторис Предоплата 100%'
-          ) {
+          if (localContactType && localContactType.includes('Кошторис')) {
             const localArrOfRelNakl = await get__all(
               {
                 page: '0',
@@ -202,8 +190,8 @@ function AktOfWorkPrint({ params }: Readonly<ParamsProps>) {
     <AktToPrint
       aktOfWorkNumber={aktOfWorkNumber}
       aktOfWorkDate={aktOfWorkDate}
-      executorObj={localOurFirmObj as I_TransformedExecutor}
-      clientObj={localClientObj as I_TransformedClient}
+      executorObj={localOurFirmObj as I_Client}
+      clientObj={localClientObj as I_Client}
       contractObj={localContractObj as I_Contract}
       typeAkt={typeAkt}
       aktSum={aktSum}
