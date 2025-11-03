@@ -49,9 +49,9 @@ export default function PrintGrafik({ params }: Readonly<ParamsProps>) {
   }, [id]);
   return (
     <CalendarnGraficToPrint
-      currentContract={currentContract!}
-      currentClient={currentClient!}
-      currentExecutor={currentExecutor!}
+      contractObj={currentContract as I_Contract}
+      clientObj={currentClient as I_Client}
+      executorObj={currentExecutor as I_Client}
       currentCalendGrafic={currentCalendGrafic!}
     />
   );

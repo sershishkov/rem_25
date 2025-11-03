@@ -20,75 +20,103 @@ const widthColumnAmount = '11mm';
 const widthColumnMonths = '9mm';
 
 export default function CalendarnGraficToPrint({
-  currentContract,
-  currentClient,
-  currentExecutor,
+  contractObj,
+  clientObj,
+  executorObj,
   currentCalendGrafic,
 }: Readonly<{
-  currentContract: I_Contract;
-  currentClient: I_Client;
-  currentExecutor: I_Client;
+  contractObj: I_Contract;
+  clientObj: I_Client;
+  executorObj: I_Client;
   currentCalendGrafic: I_CalendarnGrafik;
 }>) {
   const tableRows: I_ServiceWorkInCalendarnGrafik[] =
     currentCalendGrafic?.serviceWorks;
 
   const contrDateStr = new Date(
-    currentContract?.contractDate ?? ''
+    contractObj?.contractDate ?? ''
   ).toLocaleDateString('uk-UA', {
     year: 'numeric',
   });
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   //@ts-ignore
-  const currentContractType = currentContract?.contractType?.contractTypeName;
+  const currentContractType = contractObj?.contractType?.contractTypeName;
 
-  const contractDescription = currentContract?.contractDescription;
-  const remsCalendarGrafikUnit = currentContract?.remsCalendarGrafikUnit;
-  const remsCalendarGrafikAmount = currentContract?.remsCalendarGrafikAmount;
+  const contractDescription = contractObj?.contractDescription;
+  const remsCalendarGrafikUnit = contractObj?.remsCalendarGrafikUnit;
+  const remsCalendarGrafikAmount = contractObj?.remsCalendarGrafikAmount;
 
-  const startMonthWorkBudjet = currentContract?.startMonthWorkBudjet;
-  const endMonthWorkBudjet = currentContract?.endMonthWorkBudjet;
+  const startMonthWorkBudjet = contractObj?.startMonthWorkBudjet;
+  const endMonthWorkBudjet = contractObj?.endMonthWorkBudjet;
 
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  //@ts-ignore
-  const clientTypeShort = currentClient?.firmType?.firmTypeShortName;
-  const clientName = currentClient?.clientShortName;
+  let executor_TypeShort = '';
+  let executor_ShortName = '';
+  let executor_JobTitleImen = '';
+  let executor_bossShort = '';
+  let executor_EDRPO = '';
+  let executor_iban = '';
+  let executor_firmAddressWithPostIndex = '';
+  let executor_Tel = '';
+  let executor_Email = '';
 
-  const clientJobTitleimen = currentClient?.jobTitle;
-  const clientFIOImen = `${
-    currentClient?.firstName_imen
-  } ${currentClient?.lastName_imen?.toLocaleUpperCase()}`;
-  const clientIBAN = currentClient?.iban_budget;
-  const clientEDRPO = `ЄДРПОУ: ${currentClient?.edrpou}`;
-  const clientAddress = `${currentClient?.postIndex} ${currentClient?.address}`;
-  const clientTel = `${
-    currentClient?.telNumber ? `Тел:${currentClient?.telNumber}` : ''
-  }`;
-  const clientEmail = `${
-    currentClient?.email ? `email:${currentClient?.email}` : ''
-  }`;
+  let client_TypeShort = '';
+  let client_ShortName = '';
+  let client_JobTitleImen = '';
+  let client_bossShort = '';
+  let client_EDRPO = '';
+  let client_iban = '';
+  let client_firmAddressWithPostIndex = '';
+  let client_Tel = '';
+  let client_Email = '';
 
-  const executorName = currentExecutor?.clientShortName;
+  if (executorObj !== undefined) {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    //@ts-ignore
+    executor_TypeShort = executorObj.firmType?.firmTypeShortName;
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    //@ts-ignore
+    executor_ShortName = executorObj.clientShortName;
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    //@ts-ignore
+    executor_JobTitleImen = executorObj.jobTitle;
+    executor_bossShort = `${
+      executorObj.firstName_imen
+    } ${executorObj.lastName_imen?.toUpperCase()}`.trim();
 
-  const executorJobTitleimen = currentExecutor?.jobTitle;
+    executor_iban = executorObj.iban || '';
+    executor_EDRPO = executorObj?.edrpou
+      ? `ЄДРПОУ: ${executorObj?.edrpou}`
+      : '';
 
-  const executorFIOImen = `${
-    currentExecutor?.firstName_imen
-  } ${currentExecutor?.lastName_imen?.toLocaleUpperCase()}`;
+    executor_firmAddressWithPostIndex =
+      ` ${executorObj.postIndex}, ${executorObj.address}`.trim();
+    executor_Tel = executorObj.telNumber ? `Тел:${executorObj.telNumber}` : '';
+    executor_Email = executorObj.email ? `email:${executorObj?.email}` : '';
+  }
 
-  const executorIBAN = currentExecutor?.iban;
-  const executograyRPO = `ЄДРПОУ: ${currentExecutor?.edrpou}`;
+  if (clientObj !== undefined) {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    //@ts-ignore
+    client_TypeShort = clientObj?.firmType?.firmTypeShortName;
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    //@ts-ignore
+    client_ShortName = clientObj?.clientShortName;
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    //@ts-ignore
+    client_JobTitleImen = clientObj?.jobTitle;
+    client_bossShort = `${
+      clientObj.firstName_imen
+    } ${clientObj.lastName_imen?.toUpperCase()}`.trim();
 
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  //@ts-ignore
-  const executorTypeShort = currentExecutor?.firmType?.firmTypeShortName;
-  const executorAddress = `${currentExecutor?.postIndex} ${currentExecutor?.address}`;
-  const executorTel = `${
-    currentExecutor?.telNumber ? `Тел:${currentExecutor?.telNumber}` : ''
-  }`;
-  const executorEmail = `${
-    currentExecutor?.email ? `email:${currentExecutor?.email}` : ''
-  }`;
+    client_iban = clientObj.iban || '';
+    client_EDRPO = clientObj?.edrpou ? `ЄДРПОУ: ${clientObj?.edrpou}` : '';
+
+    client_firmAddressWithPostIndex =
+      ` ${clientObj.postIndex}, ${clientObj.address}`.trim();
+    client_Tel = clientObj.telNumber ? `Тел:${clientObj.telNumber}` : '';
+    client_Email = clientObj.email ? `email:${clientObj.email}` : '';
+  }
+
   return (
     <div className={classes.page} id='page'>
       {currentContractType !== 'Ремсервис (бюджет)' && (
@@ -261,7 +289,9 @@ export default function CalendarnGraficToPrint({
               {tableRows &&
                 tableRows.length > 0 &&
                 tableRows.map((row) => (
-                  <TableRow key={row.row_id}>
+                  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                  //@ts-ignore
+                  <TableRow key={`${row._id}`}>
                     <TableCell>
                       <Typography
                         pl={1}
@@ -653,7 +683,7 @@ export default function CalendarnGraficToPrint({
                   variant='body2'
                   className={classes['calendarn-grafik-text']}
                 >
-                  {executorTypeShort} «{executorName}»{' '}
+                  {executor_TypeShort} «{executor_ShortName}»{' '}
                 </Typography>
               </TableCell>
               <TableCell>
@@ -661,18 +691,19 @@ export default function CalendarnGraficToPrint({
                   variant='body2'
                   className={classes['calendarn-grafik-text']}
                 >
-                  {clientTypeShort} «{clientName}»{' '}
+                  {client_TypeShort} «{client_ShortName}»{' '}
                 </Typography>
               </TableCell>
             </TableRow>
-            {(executorAddress !== '' || clientAddress !== '') && (
+            {(executor_firmAddressWithPostIndex !== '' ||
+              client_firmAddressWithPostIndex !== '') && (
               <TableRow>
                 <TableCell>
                   <Typography
                     variant='body2'
                     className={classes['calendarn-grafik-text']}
                   >
-                    {executorAddress}
+                    {executor_firmAddressWithPostIndex}
                   </Typography>
                 </TableCell>
                 <TableCell>
@@ -680,19 +711,19 @@ export default function CalendarnGraficToPrint({
                     variant='body2'
                     className={classes['calendarn-grafik-text']}
                   >
-                    {clientAddress}
+                    {client_firmAddressWithPostIndex}
                   </Typography>
                 </TableCell>
               </TableRow>
             )}
-            {(executograyRPO !== '' || clientEDRPO !== '') && (
+            {(executor_EDRPO !== '' || client_EDRPO !== '') && (
               <TableRow>
                 <TableCell>
                   <Typography
                     variant='body2'
                     className={classes['calendarn-grafik-text']}
                   >
-                    {executograyRPO}
+                    {executor_EDRPO}
                   </Typography>
                 </TableCell>
                 <TableCell>
@@ -700,19 +731,19 @@ export default function CalendarnGraficToPrint({
                     variant='body2'
                     className={classes['calendarn-grafik-text']}
                   >
-                    {clientEDRPO}
+                    {client_EDRPO}
                   </Typography>
                 </TableCell>
               </TableRow>
             )}
-            {(executorIBAN !== '' || clientIBAN !== '') && (
+            {(executor_iban !== '' || client_iban !== '') && (
               <TableRow>
                 <TableCell>
                   <Typography
                     variant='body2'
                     className={classes['calendarn-grafik-text']}
                   >
-                    {executorIBAN}
+                    {executor_iban}
                   </Typography>
                 </TableCell>
                 <TableCell>
@@ -720,19 +751,19 @@ export default function CalendarnGraficToPrint({
                     variant='body2'
                     className={classes['calendarn-grafik-text']}
                   >
-                    {clientIBAN}
+                    {client_iban}
                   </Typography>
                 </TableCell>
               </TableRow>
             )}
-            {(executorTel !== '' || clientTel !== '') && (
+            {(executor_Tel !== '' || client_Tel !== '') && (
               <TableRow>
                 <TableCell>
                   <Typography
                     variant='body2'
                     className={classes['calendarn-grafik-text']}
                   >
-                    {executorTel}
+                    {executor_Tel}
                   </Typography>
                 </TableCell>
                 <TableCell>
@@ -740,19 +771,19 @@ export default function CalendarnGraficToPrint({
                     variant='body2'
                     className={classes['calendarn-grafik-text']}
                   >
-                    {clientTel}
+                    {client_Tel}
                   </Typography>
                 </TableCell>
               </TableRow>
             )}
-            {(executorEmail !== '' || clientEmail !== '') && (
+            {(executor_Email !== '' || client_Email !== '') && (
               <TableRow>
                 <TableCell>
                   <Typography
                     variant='body2'
                     className={classes['calendarn-grafik-text']}
                   >
-                    {executorEmail}
+                    {executor_Email}
                   </Typography>
                 </TableCell>
                 <TableCell>
@@ -760,12 +791,12 @@ export default function CalendarnGraficToPrint({
                     variant='body2'
                     className={classes['calendarn-grafik-text']}
                   >
-                    {clientEmail}
+                    {client_Email}
                   </Typography>
                 </TableCell>
               </TableRow>
             )}
-            {(executorJobTitleimen !== '' || clientJobTitleimen !== '') && (
+            {(executor_JobTitleImen !== '' || client_JobTitleImen !== '') && (
               <TableRow>
                 <TableCell>
                   <Typography
@@ -773,7 +804,7 @@ export default function CalendarnGraficToPrint({
                     className={classes['calendarn-grafik-text']}
                     mb={2}
                   >
-                    {executorJobTitleimen}
+                    {executor_JobTitleImen}
                   </Typography>
                 </TableCell>
                 <TableCell>
@@ -782,7 +813,7 @@ export default function CalendarnGraficToPrint({
                     className={classes['calendarn-grafik-text']}
                     mb={2}
                   >
-                    {clientJobTitleimen}
+                    {client_JobTitleImen}
                   </Typography>
                 </TableCell>
               </TableRow>
@@ -800,7 +831,7 @@ export default function CalendarnGraficToPrint({
                       className={classes['calendarn-grafik-text']}
                       sx={{ paddingRight: '4px' }}
                     >
-                      {executorFIOImen}
+                      {executor_bossShort}
                     </Typography>
                   </Grid>
                 </Grid>
@@ -816,7 +847,7 @@ export default function CalendarnGraficToPrint({
                       className={classes['calendarn-grafik-text']}
                       sx={{ paddingRight: '4px' }}
                     >
-                      {clientFIOImen}
+                      {client_bossShort}
                     </Typography>
                   </Grid>
                 </Grid>
