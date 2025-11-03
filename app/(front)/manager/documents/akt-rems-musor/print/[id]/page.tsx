@@ -78,8 +78,8 @@ export default function AktRemsMusorPrint({ params }: Readonly<ParamsProps>) {
 
   return (
     <AktRemsMusorToPrint
-      currentExecutor={currentExecutor!}
-      currentClient={currentClient!}
+      executorObj={currentExecutor!}
+      clientObj={currentClient!}
       aktRemsMusorNumber={aktRemsMusorNumber}
       aktRemsMusorDate={aktRemsMusorDate}
       serviceWorks={serviceWorks}

@@ -14,8 +14,8 @@ import Typography from '@mui/material/Typography';
 import classes from '../styles.module.scss';
 
 export default function AktRemsMusorToPrint({
-  currentExecutor,
-  currentClient,
+  executorObj,
+  clientObj,
 
   aktRemsMusorNumber,
   aktRemsMusorDate,
@@ -23,8 +23,8 @@ export default function AktRemsMusorToPrint({
   totalAktRemsMusorSum,
   totalAktRemsMusorToShow,
 }: Readonly<{
-  currentExecutor: I_Client;
-  currentClient: I_Client;
+  executorObj: I_Client;
+  clientObj: I_Client;
 
   aktRemsMusorNumber: string;
   aktRemsMusorDate: string;
@@ -34,37 +34,58 @@ export default function AktRemsMusorToPrint({
 }>) {
   const localTotal = totalAktRemsMusorToShow || totalAktRemsMusorSum;
 
-  const sumPropis = FloatToSamplesInWordsUkr(parseFloat(localTotal));
+  const sumPropis = FloatToSamplesInWordsUkr(Number.parseFloat(localTotal));
 
-  const localExecutor = `${
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    //@ts-ignore
-    currentExecutor.firmType!.firmTypeShortName!
-  } « ${currentExecutor?.clientShortName} », ЄДРПОУ :${
-    currentExecutor?.edrpou
-  }`;
-  const localClient = `${
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    //@ts-ignore
-    currentClient.firmType!.firmTypeShortName!
-  } « ${currentClient?.clientShortName} »,ЄДРПОУ :${currentClient?.edrpou}`;
+  let executor_typeAndShortNameAndEDRPOU_INN = '';
+  let executor_bossShort = '';
+  let executor_bossLongImenitelny = '';
+  let executor_firmAddressWithPostIndex = '';
+  let executor_iban = '';
 
-  const localExecuterBoss = `${
-    currentExecutor?.firstName_imen
-  } ${currentExecutor?.lastName_imen?.toUpperCase()}`;
+  let client_typeAndShortNameAndEDRPOU_INN = '';
+  let client_bossShort = '';
+  let client_bossLongImenitelny = '';
+  let client_firmAddressWithPostIndex = '';
+  let client_iban = '';
 
-  const localClientBoss = `${
-    currentClient?.firstName_imen
-  } ${currentClient?.lastName_imen?.toUpperCase()}`;
+  if (executorObj !== undefined) {
+    executor_typeAndShortNameAndEDRPOU_INN =
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      //@ts-ignore
+      `${executorObj.firmType?.firmTypeShortName}« ${executorObj.clientShortName} », ${executorObj.edrpou} `.trim();
 
-  const executerBossLong = `${currentExecutor?.lastName_imen} ${currentExecutor?.firstName_imen} ${currentExecutor?.patronymic_imen}`;
-  const clientBossLong = `${currentClient?.lastName_imen} ${currentClient?.firstName_imen} ${currentClient?.patronymic_imen}`;
+    executor_bossShort = `${
+      executorObj.firstName_imen
+    } ${executorObj.lastName_imen?.toUpperCase()}`.trim();
 
-  const localExecutorAddress = `Адреса: ${currentExecutor?.postIndex}, ${currentExecutor?.address}`;
-  const localClientAddress = `Адреса: ${currentClient?.postIndex}, ${currentClient?.address}`;
+    executor_bossLongImenitelny =
+      `${executorObj.lastName_imen} ${executorObj.firstName_imen} ${executorObj.patronymic_imen} `.trim();
 
-  const localExecutorIBAN = `IBAN: ${currentExecutor?.iban}`;
-  const localClientIBAN = `IBAN: ${currentClient?.iban}`;
+    executor_firmAddressWithPostIndex =
+      ` ${executorObj.postIndex}, ${executorObj.address}`.trim();
+
+    executor_iban = executorObj.iban || '';
+  }
+
+  if (clientObj !== undefined) {
+    client_typeAndShortNameAndEDRPOU_INN =
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      //@ts-ignore
+      `${clientObj.firmType?.firmTypeShortName}« ${clientObj.clientShortName} », ${clientObj.edrpou} `.trim();
+
+    client_bossShort = `${
+      clientObj.firstName_imen
+    } ${clientObj.lastName_imen?.toUpperCase()}`.trim();
+
+    client_bossLongImenitelny =
+      `${clientObj.lastName_imen} ${clientObj.firstName_imen} ${clientObj.patronymic_imen} `.trim();
+
+    client_firmAddressWithPostIndex =
+      ` ${clientObj.postIndex}, ${clientObj.address}`.trim();
+
+    client_iban = clientObj.iban || '';
+  }
+
   return (
     <div className={classes.page} id='page'>
       <TableContainer
@@ -111,7 +132,7 @@ export default function AktRemsMusorToPrint({
                   variant='body2'
                   className={classes['rems-potochn-akt-musor-text']}
                 >
-                  {localExecutor}
+                  {executor_typeAndShortNameAndEDRPOU_INN}
                 </Typography>
               </TableCell>
               <TableCell>
@@ -119,25 +140,7 @@ export default function AktRemsMusorToPrint({
                   variant='body2'
                   className={classes['rems-potochn-akt-musor-text']}
                 >
-                  {localClient}
-                </Typography>
-              </TableCell>
-            </TableRow>
-            <TableRow>
-              <TableCell>
-                <Typography
-                  variant='body2'
-                  className={classes['rems-potochn-akt-musor-text']}
-                >
-                  {localExecutorAddress}
-                </Typography>
-              </TableCell>
-              <TableCell>
-                <Typography
-                  variant='body2'
-                  className={classes['rems-potochn-akt-musor-text']}
-                >
-                  {localClientAddress}
+                  {client_typeAndShortNameAndEDRPOU_INN}
                 </Typography>
               </TableCell>
             </TableRow>
@@ -147,7 +150,7 @@ export default function AktRemsMusorToPrint({
                   variant='body2'
                   className={classes['rems-potochn-akt-musor-text']}
                 >
-                  {localExecutorIBAN}
+                  {executor_firmAddressWithPostIndex}
                 </Typography>
               </TableCell>
               <TableCell>
@@ -155,7 +158,25 @@ export default function AktRemsMusorToPrint({
                   variant='body2'
                   className={classes['rems-potochn-akt-musor-text']}
                 >
-                  {localClientIBAN}
+                  {client_firmAddressWithPostIndex}
+                </Typography>
+              </TableCell>
+            </TableRow>
+            <TableRow>
+              <TableCell>
+                <Typography
+                  variant='body2'
+                  className={classes['rems-potochn-akt-musor-text']}
+                >
+                  {executor_iban}
+                </Typography>
+              </TableCell>
+              <TableCell>
+                <Typography
+                  variant='body2'
+                  className={classes['rems-potochn-akt-musor-text']}
+                >
+                  {client_iban}
                 </Typography>
               </TableCell>
             </TableRow>
@@ -197,7 +218,7 @@ export default function AktRemsMusorToPrint({
                   variant='body2'
                   className={classes['rems-potochn-akt-musor-text']}
                 >
-                  {clientBossLong}
+                  {client_bossLongImenitelny}
                 </Typography>
               </TableCell>
             </TableRow>
@@ -215,7 +236,7 @@ export default function AktRemsMusorToPrint({
                   variant='body2'
                   className={classes['rems-potochn-akt-musor-text']}
                 >
-                  {executerBossLong}
+                  {executor_bossLongImenitelny}
                 </Typography>
               </TableCell>
             </TableRow>
@@ -447,7 +468,7 @@ export default function AktRemsMusorToPrint({
                   ></Grid>
                   <Grid>
                     <Typography variant='body1' align='right'>
-                      {localExecuterBoss}
+                      {executor_bossShort}
                     </Typography>
                   </Grid>
                 </Grid>
@@ -463,7 +484,7 @@ export default function AktRemsMusorToPrint({
                   ></Grid>
                   <Grid>
                     <Typography variant='body1' align='right'>
-                      {localClientBoss}
+                      {client_bossShort}
                     </Typography>
                   </Grid>
                 </Grid>
