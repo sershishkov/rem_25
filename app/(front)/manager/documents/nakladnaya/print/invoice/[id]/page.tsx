@@ -92,7 +92,7 @@ export default function InvoiceNakladnayaPrint({
     <InvoiceToPrint
       nakladnayaNumber={invoiceNumber}
       nakladnayaDate={invoiceDate}
-      ourFirmObj={localOurFirmObj!}
+      executorObj={localOurFirmObj!}
       clientObj={localClientObj!}
       contractObj={localContractObj!}
       typeNakl={typeNakl}

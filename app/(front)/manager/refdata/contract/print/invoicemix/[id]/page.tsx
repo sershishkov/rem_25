@@ -286,9 +286,9 @@ export default function InvoiceMix({ params }: Readonly<ParamsProps>) {
     <InviceMixToPrint
       tableAktRows={tableAktRows}
       tableNaklRows={tableNaklRows}
-      localOurFirmObj={localOurFirmObj!}
-      localClientObj={localClientObj!}
-      localContractObj={localContractObj!}
+      executorObj={localOurFirmObj!}
+      clientObj={localClientObj!}
+      contractObj={localContractObj!}
       invoiceNumber={invoiceNumber}
       invoiceDate={invoiceDate}
       naklSum={naklSum}

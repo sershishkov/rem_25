@@ -20,9 +20,9 @@ import classes from './styles.module.scss';
 export default function InviceMixToPrint({
   tableAktRows,
   tableNaklRows,
-  localOurFirmObj,
-  localClientObj,
-  localContractObj,
+  executorObj,
+  clientObj,
+  contractObj,
 
   invoiceNumber,
   invoiceDate,
@@ -33,9 +33,9 @@ export default function InviceMixToPrint({
 }: Readonly<{
   tableAktRows: I_WorkRows[];
   tableNaklRows: I_LProduct[];
-  localOurFirmObj: I_Client;
-  localClientObj: I_Client;
-  localContractObj: I_Contract;
+  executorObj: I_Client;
+  clientObj: I_Client;
+  contractObj: I_Contract;
 
   invoiceNumber: string;
   invoiceDate: Date;
@@ -44,6 +44,7 @@ export default function InviceMixToPrint({
   totalInvoiceSum: number;
   invoiceDescription: string;
 }>) {
+  const contractNumber = contractObj?.contractNumber;
   const sumPropis = FloatToSamplesInWordsUkr(
     Number.isNaN(totalInvoiceSum) ? 0 : totalInvoiceSum
   );
@@ -62,44 +63,68 @@ export default function InviceMixToPrint({
     }
   );
   const contractDateToString = new Date(
-    localContractObj.contractDate! ?? ''
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    //@ts-ignore
+    contractObj?.contractDate
   ).toLocaleDateString('uk-UA', {
     day: '2-digit',
     month: 'long',
     year: 'numeric',
   });
 
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  //@ts-ignore
-  const ourFirm = `${localOurFirmObj.firmType!.firmTypeShortName!} « ${
-    localOurFirmObj?.clientShortName
-  } », ${localOurFirmObj?.edrpou ? `ЄДРПОУ :${localOurFirmObj?.edrpou}` : ''} ${
-    localOurFirmObj?.inn ? `ІНН :${localOurFirmObj?.inn}` : ''
-  }`;
+  let executor_typeAndShortNameAndEDRPOU_INN = '';
+  let executor_firmTypeShortName = '';
+  let executor_firmAddressWithPostIndex = '';
+  let executor_iban = '';
+  let executor_TaxationType = '';
 
-  const ourFirmAddress = `${localOurFirmObj?.postIndex}, ${localOurFirmObj?.address}`;
+  let client_typeAndShortNameAndEDRPOU_INN = '';
+  let client_firmAddressWithPostIndex = '';
+  let client_iban = '';
 
-  const ourIBAN = localOurFirmObj?.iban;
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  //@ts-ignore
-  const ourTaxationType = `${localOurFirmObj.firmType!.firmTypeShortName!} « ${
-    localOurFirmObj?.clientShortName
+  if (executorObj !== undefined) {
+    const edrpouPart = executorObj.edrpou
+      ? `ЄДРПОУ :${executorObj.edrpou}`
+      : '';
+    const innPart = executorObj.inn ? `ІНН :${executorObj.inn}` : '';
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     //@ts-ignore
-  } » ${localOurFirmObj?.taxationType.taxationTypeName}`;
+    executor_firmTypeShortName = executorObj.firmType?.firmTypeShortName;
 
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  //@ts-ignore
-  const payerFirm = `${localClientObj.firmType!.firmTypeShortName!} « ${
-    localClientObj?.clientShortName
-  } », ${localClientObj?.edrpou ? `ЄДРПОУ :${localClientObj?.edrpou}` : ''} ${
-    localClientObj?.inn ? `ІНН :${localClientObj?.inn}` : ''
-  }`;
+    executor_typeAndShortNameAndEDRPOU_INN =
+      `${executor_firmTypeShortName}« ${executorObj.clientShortName} », ${edrpouPart} ${innPart}`.trim();
 
-  const clientFirmAddress = `${localClientObj?.postIndex}, ${localClientObj?.address}`;
+    executor_firmAddressWithPostIndex =
+      ` ${executorObj.postIndex}, ${executorObj.address}`.trim();
 
-  const clientIBAN = localClientObj?.iban;
-  const contractNumber = localContractObj?.contractNumber;
+    executor_iban = executorObj.iban || '';
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    //@ts-ignore
+    executor_TaxationType = `${
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      //@ts-ignore
+      executorObj.firmType?.firmTypeShortName
+    } « ${
+      executorObj.clientShortName
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      //@ts-ignore
+    } » ${executorObj.taxationType?.taxationTypeName}`;
+  }
+
+  if (clientObj !== undefined) {
+    const edrpouPart = clientObj.edrpou ? `ЄДРПОУ :${clientObj.edrpou}` : '';
+    const innPart = clientObj.inn ? `ІНН :${clientObj.inn}` : '';
+
+    client_typeAndShortNameAndEDRPOU_INN =
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      //@ts-ignore
+      `${clientObj.firmType?.firmTypeShortName}« ${clientObj.clientShortName} », ${edrpouPart} ${innPart}`.trim();
+
+    client_firmAddressWithPostIndex =
+      ` ${clientObj.postIndex}, ${clientObj.address}`.trim();
+
+    client_iban = clientObj.iban || '';
+  }
 
   return (
     <div className={classes.page} id='page'>
@@ -134,7 +159,9 @@ export default function InviceMixToPrint({
                 <Typography variant='body2'>Постачальник:</Typography>
               </TableCell>
               <TableCell colSpan={9}>
-                <Typography variant='body2'>{ourFirm}</Typography>
+                <Typography variant='body2'>
+                  {executor_typeAndShortNameAndEDRPOU_INN}
+                </Typography>
               </TableCell>
             </TableRow>
             <TableRow>
@@ -142,7 +169,9 @@ export default function InviceMixToPrint({
                 <Typography variant='body2'>Адреса:</Typography>
               </TableCell>
               <TableCell colSpan={9}>
-                <Typography variant='body2'>{ourFirmAddress}</Typography>
+                <Typography variant='body2'>
+                  {executor_firmAddressWithPostIndex}
+                </Typography>
               </TableCell>
             </TableRow>
             <TableRow>
@@ -150,12 +179,12 @@ export default function InviceMixToPrint({
                 <Typography variant='body2'>IBAN:</Typography>
               </TableCell>
               <TableCell colSpan={9}>
-                <Typography variant='body2'>{ourIBAN}</Typography>
+                <Typography variant='body2'>{executor_iban}</Typography>
               </TableCell>
             </TableRow>
             <TableRow>
               <TableCell align='left' colSpan={12}>
-                <Typography variant='body2'>{ourTaxationType}</Typography>
+                <Typography variant='body2'>{executor_TaxationType}</Typography>
               </TableCell>
             </TableRow>
             <TableRow sx={{ height: '10px' }}>
@@ -173,7 +202,9 @@ export default function InviceMixToPrint({
                 <Typography variant='body2'>Платник:</Typography>
               </TableCell>
               <TableCell colSpan={9}>
-                <Typography variant='body2'>{payerFirm}</Typography>
+                <Typography variant='body2'>
+                  {client_typeAndShortNameAndEDRPOU_INN}
+                </Typography>
               </TableCell>
             </TableRow>
             <TableRow>
@@ -181,7 +212,9 @@ export default function InviceMixToPrint({
                 <Typography variant='body2'>Адреса:</Typography>
               </TableCell>
               <TableCell colSpan={9}>
-                <Typography variant='body2'>{clientFirmAddress}</Typography>
+                <Typography variant='body2'>
+                  {client_firmAddressWithPostIndex}
+                </Typography>
               </TableCell>
             </TableRow>
             <TableRow>
@@ -189,7 +222,7 @@ export default function InviceMixToPrint({
                 <Typography variant='body2'>IBAN:</Typography>
               </TableCell>
               <TableCell colSpan={9}>
-                <Typography variant='body2'>{clientIBAN}</Typography>
+                <Typography variant='body2'>{client_iban}</Typography>
               </TableCell>
             </TableRow>
             <TableRow>
@@ -397,7 +430,6 @@ export default function InviceMixToPrint({
               </>
             )}
           </TableBody>
-
           <TableBody
             sx={{
               '& td,th': {
