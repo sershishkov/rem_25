@@ -19,95 +19,120 @@ export default function NaklRems3ToPrint({
 }: Readonly<{
   currentNakl: I_NakladnayaRems;
 }>) {
-  const percent3 = currentNakl?.percent3;
+  let percent3 = 0;
   let newNaklSum = 0;
 
-  const tableRows = currentNakl?.products?.map(
-    (inner_item: I_ProductInNakladnayaRems) => {
-      const newPrice = inner_item?.price + (inner_item?.price * percent3) / 100;
-      const newRowSum = inner_item?.amount * newPrice;
-      newNaklSum += newRowSum;
+  let tableRows;
+  let nakladnayaRemsNumber3 = '';
+  let contrDateStr = '';
 
-      return {
-        row_id: inner_item._id!.toString(),
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        //@ts-ignore
-        product: inner_item.product.productName,
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        //@ts-ignore
-        unit: inner_item.product.unit.unitName,
-        extraInformation: inner_item.extraInformation!,
-        amount: inner_item?.amount.toString(),
-        price: newPrice?.toFixed(2),
-        rowSum: newRowSum?.toFixed(2),
-      };
-    }
-  );
-  const nakladnayaRemsNumber3 = currentNakl?.nakladnayaRemsNumber3;
+  let executor_ShortName = '';
+  let executor_TypeShort = '';
+  let executor_FIOImen = '';
+  let executor_EDRPO = '';
+  let executor_iban = '';
+  let executor_firmAddressWithPostIndex = '';
+  let executor_TaxationType = '';
 
-  const contrDateStr = new Date(
-    currentNakl?.nakladnayaRemsDate
-  ).toLocaleDateString('uk-UA', {
-    day: '2-digit',
-    month: 'long',
-    year: 'numeric',
-  });
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  //@ts-ignore
-  const executorFirm3_name = currentNakl?.executorFirm3?.clientShortName;
+  let client_ShortName = '';
+  let client_TypeShort = '';
+  let client_FIOImen = '';
+  let client_EDRPO = '';
+  let client_iban = '';
+  let client_firmAddressWithPostIndex = '';
 
-  const executorFirm3_TypeShort =
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    //@ts-ignore
-    currentNakl?.executorFirm3?.firmType?.firmTypeShortName;
+  if (currentNakl !== undefined) {
+    percent3 = currentNakl.percent3;
+    nakladnayaRemsNumber3 = currentNakl.nakladnayaRemsNumber3;
+    tableRows = currentNakl?.products?.map(
+      (inner_item: I_ProductInNakladnayaRems) => {
+        const newPrice =
+          inner_item?.price + (inner_item?.price * percent3) / 100;
+        const newRowSum = inner_item?.amount * newPrice;
+        newNaklSum += newRowSum;
 
-  const executorFIOImen = `${
+        return {
+          row_id: inner_item._id!.toString(),
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          //@ts-ignore
+          product: inner_item.product.productName,
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          //@ts-ignore
+          unit: inner_item.product.unit.unitName,
+          extraInformation: inner_item.extraInformation!,
+          amount: inner_item?.amount.toString(),
+          price: newPrice?.toFixed(2),
+          rowSum: newRowSum?.toFixed(2),
+        };
+      }
+    );
+    contrDateStr = new Date(currentNakl.nakladnayaRemsDate).toLocaleDateString(
+      'uk-UA',
+      {
+        day: '2-digit',
+        month: 'long',
+        year: 'numeric',
+      }
+    );
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     //@ts-ignore
-    currentNakl?.executorFirm3?.firstName_imen
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    //@ts-ignore
-  } ${currentNakl?.executorFirm3?.lastName_imen?.toLocaleUpperCase()}`;
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  //@ts-ignore
-  const executorEDRPO = `ЄДРПОУ: ${currentNakl?.executorFirm3?.edrpou}`;
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  //@ts-ignore
-  const executorAddress = `${currentNakl?.executorFirm3?.postIndex} ${currentNakl?.executorFirm3?.address}`;
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  //@ts-ignore
-  const executorIBAN = currentNakl?.executorFirm3?.iban;
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  //@ts-ignore
-  const executorTaxationType =
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    //@ts-ignore
-    currentNakl?.executorFirm3?.taxationType?.taxationTypeName;
+    executor_ShortName = currentNakl.executorFirm3?.clientShortName;
 
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  //@ts-ignore
-  const ourFirm_name = currentNakl?.ourFirm?.clientShortName;
+    executor_TypeShort =
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      //@ts-ignore
+      currentNakl.executorFirm3?.firmType?.firmTypeShortName;
+    executor_FIOImen = `${
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      //@ts-ignore
+      currentNakl.executorFirm3?.firstName_imen
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      //@ts-ignore
+    } ${currentNakl.executorFirm3?.lastName_imen?.toLocaleUpperCase()}`;
 
-  const ourFirm_TypeShort =
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     //@ts-ignore
-    currentNakl?.ourFirm?.firmType?.firmTypeShortName;
-  const ourFirmFIOImen = `${
+    executor_EDRPO = `ЄДРПОУ: ${currentNakl.executorFirm3?.edrpou}`;
+
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     //@ts-ignore
-    currentNakl?.ourFirm?.firstName_imen
+    executor_firmAddressWithPostIndex = `${currentNakl.executorFirm3?.postIndex} ${currentNakl.executorFirm3?.address}`;
+
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     //@ts-ignore
-  } ${currentNakl?.ourFirm?.lastName_imen?.toLocaleUpperCase()}`;
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  //@ts-ignore
-  const ourFirmEDRPO = `ЄДРПОУ: ${currentNakl?.ourFirm?.edrpou}`;
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  //@ts-ignore
-  const ourFirmAddress = `${currentNakl?.ourFirm?.postIndex} ${currentNakl?.ourFirm?.address}`;
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  //@ts-ignore
-  const ourFirmIBAN = currentNakl?.ourFirm?.iban;
+    executor_iban = currentNakl.executorFirm3?.iban;
+
+    executor_TaxationType =
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      //@ts-ignore
+      currentNakl.executorFirm3?.taxationType?.taxationTypeName;
+
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    //@ts-ignore
+    client_ShortName = currentNakl.ourFirm?.clientShortName;
+
+    client_TypeShort =
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      //@ts-ignore
+      currentNakl.ourFirm?.firmType?.firmTypeShortName;
+    client_FIOImen = `${
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      //@ts-ignore
+      currentNakl.ourFirm?.firstName_imen
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      //@ts-ignore
+    } ${currentNakl.ourFirm?.lastName_imen?.toLocaleUpperCase()}`;
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    //@ts-ignore
+    client_EDRPO = `ЄДРПОУ: ${currentNakl.ourFirm?.edrpou}`;
+
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    //@ts-ignore
+    client_firmAddressWithPostIndex = `${currentNakl.ourFirm?.postIndex} ${currentNakl?.ourFirm?.address}`;
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    //@ts-ignore
+    client_iban = currentNakl.ourFirm?.iban;
+  }
 
   const totalSumPropis = FloatToSamplesInWordsUkr(newNaklSum);
 
@@ -164,8 +189,7 @@ export default function NaklRems3ToPrint({
                   variant='body2'
                   className={classes['nakl-rems-text']}
                 >
-                  {executorFirm3_TypeShort} «{executorFirm3_name}»{' '}
-                  {executorEDRPO}
+                  {executor_TypeShort} «{executor_ShortName}» {executor_EDRPO}
                 </Typography>
               </TableCell>
             </TableRow>
@@ -183,7 +207,7 @@ export default function NaklRems3ToPrint({
                   variant='body2'
                   className={classes['nakl-rems-text']}
                 >
-                  {executorAddress}
+                  {executor_firmAddressWithPostIndex}
                 </Typography>
               </TableCell>
             </TableRow>
@@ -201,7 +225,7 @@ export default function NaklRems3ToPrint({
                   variant='body2'
                   className={classes['nakl-rems-text']}
                 >
-                  {executorIBAN}
+                  {executor_iban}
                 </Typography>
               </TableCell>
             </TableRow>
@@ -212,8 +236,8 @@ export default function NaklRems3ToPrint({
                   variant='body2'
                   className={classes['nakl-rems-text']}
                 >
-                  {executorFirm3_TypeShort} « {executorFirm3_name} »{' '}
-                  {executorTaxationType}
+                  {executor_TypeShort} « {executor_ShortName} »{' '}
+                  {executor_TaxationType}
                 </Typography>
               </TableCell>
             </TableRow>
@@ -231,7 +255,7 @@ export default function NaklRems3ToPrint({
                   variant='body2'
                   className={classes['nakl-rems-text']}
                 >
-                  {ourFirm_TypeShort} « {ourFirm_name} » {ourFirmEDRPO}
+                  {client_TypeShort} « {client_ShortName} » {client_EDRPO}
                 </Typography>
               </TableCell>
             </TableRow>
@@ -249,7 +273,7 @@ export default function NaklRems3ToPrint({
                   variant='body2'
                   className={classes['nakl-rems-text']}
                 >
-                  {ourFirmAddress}
+                  {client_firmAddressWithPostIndex}
                 </Typography>
               </TableCell>
             </TableRow>
@@ -267,7 +291,7 @@ export default function NaklRems3ToPrint({
                   variant='body2'
                   className={classes['nakl-rems-text']}
                 >
-                  {ourFirmIBAN}
+                  {client_iban}
                 </Typography>
               </TableCell>
             </TableRow>
@@ -667,7 +691,7 @@ export default function NaklRems3ToPrint({
                       className={classes['jkh-budjet-text']}
                       sx={{ paddingRight: '4px' }}
                     >
-                      {executorFIOImen}
+                      {executor_FIOImen}
                     </Typography>
                   </Grid>
                 </Grid>
@@ -683,7 +707,7 @@ export default function NaklRems3ToPrint({
                       className={classes['jkh-budjet-text']}
                       sx={{ paddingRight: '4px' }}
                     >
-                      {ourFirmFIOImen}
+                      {client_FIOImen}
                     </Typography>
                   </Grid>
                 </Grid>

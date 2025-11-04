@@ -19,55 +19,69 @@ export default function NaklRems2ToPrint({
 }: Readonly<{
   currentNakl: I_NakladnayaRems;
 }>) {
-  const percent2 = currentNakl?.percent2;
+  let percent2 = 0;
   let newNaklSum = 0;
+  let tableRows;
+  let nakladnayaRemsNumber2 = '';
+  let contrDateStr = '';
+  let executor_ShortName = '';
+  let executor_TypeShort = '';
 
-  const tableRows = currentNakl?.products?.map(
-    (inner_item: I_ProductInNakladnayaRems) => {
-      const newPrice = inner_item?.price + (inner_item?.price * percent2) / 100;
-      const newRowSum = inner_item?.amount * newPrice;
-      newNaklSum += newRowSum;
+  let client_ShortName = '';
+  let client_TypeShort = '';
 
-      return {
-        row_id: inner_item._id!.toString(),
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        //@ts-ignore
-        product: inner_item.product.productName,
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        //@ts-ignore
-        unit: inner_item.product.unit.unitName,
-        extraInformation: inner_item.extraInformation!,
-        amount: inner_item?.amount.toString(),
-        price: newPrice?.toFixed(2),
-        rowSum: newRowSum?.toFixed(2),
-      };
-    }
-  );
-  const nakladnayaRemsNumber2 = currentNakl?.nakladnayaRemsNumber2;
+  if (currentNakl !== undefined) {
+    percent2 = currentNakl.percent2;
 
-  const contrDateStr = new Date(
-    currentNakl?.nakladnayaRemsDate
-  ).toLocaleDateString('uk-UA', {
-    day: '2-digit',
-    month: 'long',
-    year: 'numeric',
-  });
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  //@ts-ignore
-  const executorFirm2_name = currentNakl?.executorFirm2?.clientShortName;
+    tableRows = currentNakl.products?.map(
+      (inner_item: I_ProductInNakladnayaRems) => {
+        const newPrice =
+          inner_item?.price + (inner_item?.price * percent2) / 100;
+        const newRowSum = inner_item?.amount * newPrice;
+        newNaklSum += newRowSum;
 
-  const executorFirm2_TypeShort =
+        return {
+          row_id: inner_item._id!.toString(),
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          //@ts-ignore
+          product: inner_item.product.productName,
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          //@ts-ignore
+          unit: inner_item.product.unit.unitName,
+          extraInformation: inner_item.extraInformation!,
+          amount: inner_item?.amount.toString(),
+          price: newPrice?.toFixed(2),
+          rowSum: newRowSum?.toFixed(2),
+        };
+      }
+    );
+    nakladnayaRemsNumber2 = currentNakl.nakladnayaRemsNumber2;
+
+    contrDateStr = new Date(currentNakl.nakladnayaRemsDate).toLocaleDateString(
+      'uk-UA',
+      {
+        day: '2-digit',
+        month: 'long',
+        year: 'numeric',
+      }
+    );
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     //@ts-ignore
-    currentNakl?.executorFirm2?.firmType?.firmTypeShortName;
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  //@ts-ignore
-  const ourFirm_name = currentNakl?.ourFirm?.clientShortName;
+    executor_ShortName = currentNakl.executorFirm2?.clientShortName;
+    executor_TypeShort =
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      //@ts-ignore
+      currentNakl.executorFirm2?.firmType?.firmTypeShortName;
 
-  const ourFirm_TypeShort =
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     //@ts-ignore
-    currentNakl?.ourFirm?.firmType?.firmTypeShortName;
+    client_ShortName = currentNakl.ourFirm?.clientShortName;
+
+    client_TypeShort =
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      //@ts-ignore
+      currentNakl.ourFirm?.firmType?.firmTypeShortName;
+  }
 
   const totalSumPropis = FloatToSamplesInWordsUkr(newNaklSum);
 
@@ -113,7 +127,7 @@ export default function NaklRems2ToPrint({
                   variant='body2'
                   className={classes['nakl-rems-text']}
                 >
-                  {executorFirm2_TypeShort} {executorFirm2_name}
+                  {executor_TypeShort} «{executor_ShortName}»
                 </Typography>
               </TableCell>
             </TableRow>
@@ -131,7 +145,7 @@ export default function NaklRems2ToPrint({
                   variant='body2'
                   className={classes['nakl-rems-text']}
                 >
-                  {ourFirm_TypeShort} «{ourFirm_name}»
+                  {client_TypeShort} «{client_ShortName}»
                 </Typography>
               </TableCell>
             </TableRow>
